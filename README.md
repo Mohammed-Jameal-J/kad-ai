@@ -1,21 +1,27 @@
 # Kad AI
 
-Fruit and vegetable store with a local-LLM shopping assistant (Ollama, no paid APIs).
-Learning project: Next.js + FastAPI + SQLAlchemy + Ollama, CrewAI later.
+Fruit and vegetable store with an AI shopping assistant. Next.js + FastAPI + SQLAlchemy, with local
+models (Ollama) on your machine and hosted models (Groq) on the live site.
 
-All prices are **demonstration prices**, not live market prices.
+**Live demo:** https://kad-ai.vercel.app · All prices are **demonstration prices**, not live market prices.
 
-## Status
+## Features
 
-| Stage | What | State |
+- Storefront: categories, search and filters, product pages, cart, demo checkout, accounts, 4 languages (English, Spanish, Arabic with RTL, Hindi)
+- AI assistant: finds products, builds a basket within a budget, compares items, proposes cart changes (applied only after Confirm)
+- Grounded answers: prices, stock and totals come only from the database; replies with invented prices, nutrient figures or disease claims are rejected
+- Web search (Serper) for food questions the store data can't answer, with sources shown
+- Instant rule-based answers for common requests; typo-tolerant
+- Security: per-visitor rate limits, daily caps on AI and search, CSP, HttpOnly session cookies, scrypt passwords
+- Emails with Resend: welcome and newsletter
+- Tested: pytest, Vitest, DeepEval quality checks
+
+| Where | Intent model | Answer model |
 |---|---|---|
-| 1-2 | Database, seed catalog, product/category/cart APIs, tests | done |
-| 3 | Ollama service (`qwen3:4b` intent, `llama3.2` responses) | done |
-| 4 | AI shopping assistant with verified products and backend totals | done (API) |
-| 5 | Next.js storefront (Bootstrap 5): home, listing, category, product, cart | done |
-| 6 | Floating AI chat widget + checkout demo (orders, stock decrement) | done |
-| 7 | Tests (pytest, Vitest, smoke test), error handling, full verification | done, see [docs/verification.md](docs/verification.md) |
-| 8 | Optional CrewAI workflow (separate venv) + measured comparison | done, see [docs/crewai.md](docs/crewai.md) |
+| Local (`LLM_PROVIDER=ollama`) | `qwen3:4b` | `llama3.2` |
+| Live (`LLM_PROVIDER=groq`) | `openai/gpt-oss-20b` | `openai/gpt-oss-120b` |
+
+An optional CrewAI multi-agent workflow runs locally only ([docs/crewai.md](docs/crewai.md)).
 
 ## Quick start (two terminals)
 
@@ -31,28 +37,17 @@ npm install
 npm run dev
 ```
 
-Website: http://localhost:3000 · API docs: http://127.0.0.1:8000/docs. Details in [docs/setup.md](docs/setup.md),
-design in [docs/architecture.md](docs/architecture.md).
+Website: http://localhost:3000. Local AI needs [Ollama](https://ollama.com) with `qwen3:4b` and `llama3.2`.
 
-## API
+## Docs
 
-| Method | Path | Notes |
-|---|---|---|
-| GET | `/api/health` | |
-| GET | `/api/categories` | tree with product counts |
-| GET | `/api/products` | `q, category, min_price, max_price` (rupees), `in_stock, featured, bestseller, on_sale, sort, page, page_size` |
-| GET | `/api/products/search` | same, `q` required |
-| GET | `/api/products/{id or slug}` | includes verified nutrition when available |
-| GET | `/api/cart` | header `X-Cart-Id` |
-| POST | `/api/cart/items` | `{product_id, quantity}`; creates cart if no header; 201 |
-| PATCH | `/api/cart/items/{item_id}` | `{quantity}` (absolute) |
-| DELETE | `/api/cart/items/{item_id}` | |
-| GET | `/api/assistant/status` | Ollama reachable? models installed? (never loads a model) |
-| POST | `/api/auth/register` · `/api/auth/login` · `/api/auth/logout` | accounts; scrypt-hashed passwords, HttpOnly session cookie (7 days) |
-| GET | `/api/auth/me` · `/api/orders/mine` | current user and their orders (401 when logged out) |
-| POST | `/api/contact` | contact form, stored in the database |
-| POST | `/api/assistant/crew` | optional CrewAI workflow; 501 unless run from `backend/.venv-crewai` ([docs](docs/crewai.md)) |
-| POST | `/api/orders` | demo checkout for the `X-Cart-Id` cart: `{customer_name, phone, address, delivery_slot}`; 201; no payment fields |
-| POST | `/api/assistant/chat` | `{message, history}` → reply, DB products, basket, `pending_action` (cart changes need confirmation) |
+- [Setup](docs/setup.md) · [Architecture](docs/architecture.md) · [Deploy (Vercel + Render)](docs/deploy.md)
+- [Verification and test results](docs/verification.md) · [Security](SECURITY.md)
 
-Money fields end in `_paise` (integer). ₹180 = `18000`.
+## Author
+
+Mohammed Jameal J · [GitHub](https://github.com/Mohammed-Jameal-J) · [LinkedIn](https://www.linkedin.com/in/mohammed-jameal-j/) · mohammedjameal031@gmail.com
+
+## License
+
+[MIT](LICENSE)
