@@ -328,6 +328,18 @@ GREETING_REPLY = t("en", "greeting")
 BLOCKED_REPLY = t("en", "blocked")
 
 
+# Our data has prices, stock and descriptions, not flavour: comparisons about these go to the web.
+TASTE_WORDS = {
+    "taste", "tastes", "tasty", "tastier", "flavour", "flavor", "sweet", "sweeter", "sweetest", "sour",
+    "sourer", "tangy", "bitter", "juicy", "juicier", "texture", "soft", "softer", "crunchy", "crunchier",
+    "crisp", "crispy", "creamy", "smell", "aroma", "fragrant",
+}
+
+
+def is_taste_question(message: str) -> bool:
+    return bool(set(re.findall(r"[a-z]+", message.lower())) & TASTE_WORDS)
+
+
 def is_food_question(message: str, vocabulary: set[str]) -> bool:
     words = {normalize(w) for w in re.findall(r"[a-z]+", message.lower())}
     return bool(words & (vocabulary | websearch.FOOD_TOPICS))
@@ -362,12 +374,15 @@ def chat(db: Session, ollama: OllamaClient, request: ChatRequest, client: str = 
     result = {"writer": "template", "notes": [], **HANDLERS[parsed.intent](
         db=db, ollama=ollama, parsed=parsed, message=request.message, lang=lang,
     )}
-    # Help text, or no verified nutrition data: a food question can still be answered from the web.
+    # Help text, no verified nutrition data, or a taste/texture comparison our data can't settle:
+    # a food question can still be answered from the web.
     no_answer = parsed.intent == "other" or (
-        parsed.intent == "nutrition" and not any(n["nutrition"] for n in result.get("nutrition", [])))
+        parsed.intent == "nutrition" and not any(n["nutrition"] for n in result.get("nutrition", []))
+    ) or (parsed.intent == "compare" and is_taste_question(request.message))
     if no_answer and websearch.available() and is_food_question(request.message, vocabulary):
         if web := handle_web(db, ollama, parsed, request.message, lang, client):
-            result = {**result, **web, "nutrition": []}
+            # Keep the products the handler found: their prices and stock come from our database.
+            result = {**result, **web, "products": result.get("products") or web["products"], "nutrition": []}
     result["notes"] = notes + result["notes"]
     return {**result, "intent": parsed.intent, "parser": parser,
             "duration_ms": int((time.perf_counter() - started) * 1000)}

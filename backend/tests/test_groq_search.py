@@ -152,3 +152,32 @@ def test_non_food_question_never_searches(client, web):
     finally:
         app.dependency_overrides.clear()
     assert web == [] and body["sources"] == []
+
+
+def test_taste_comparison_uses_web_and_keeps_store_products(client, web):
+    from fakes import FakeOllama, make_client
+    app.dependency_overrides[get_ollama] = lambda: make_client(FakeOllama({
+        "qwen3:4b": {"intent": "compare", "keywords": ["papaya", "pineapple"]},
+        "llama3.2": "Pineapple tastes tangier; ripe papaya is milder and very sweet [1].",
+    }))
+    try:
+        body = client.post("/api/assistant/chat", json={"message": "Papaya or pineapple, which one is sweeter?"}).json()
+    finally:
+        app.dependency_overrides.clear()
+    assert web, "a taste question must reach web search"
+    assert body["intent"] == "compare" and body["sources"] and "[1]" in body["reply"]
+    assert {p["slug"] for p in body["products"]} >= {"red-lady-papaya", "queen-pineapple"}  # DB cards, DB prices
+    assert "not checked" in body["notes"][-1]
+
+
+def test_plain_comparison_stays_on_store_data(client, web):
+    body = client.post("/api/assistant/chat", json={"message": "Compare apples and oranges"}).json()
+    assert web == [] and body["sources"] == [] and body["parser"] == "rules"
+    assert "Shimla Apple" in body["reply"]
+
+
+def test_taste_words():
+    from app.services.assistant import is_taste_question
+    assert is_taste_question("Which is juicier, mango or orange?")
+    assert is_taste_question("Is guava crunchy?")
+    assert not is_taste_question("Which is cheaper, mango or orange?")  # price: our data answers it
