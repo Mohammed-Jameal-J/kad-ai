@@ -1,0 +1,4 @@
+# Optional Stage 8 extras. Install into a SEPARATE virtual environment (see docs/crewai.md):
+# CrewAI pins its own versions of pydantic, fastapi and SQLAlchemy.
+-r requirements.txt
+crewai>=1.15,<2

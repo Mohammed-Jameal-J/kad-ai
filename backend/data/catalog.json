@@ -1,0 +1,67 @@
+{
+  "_note": "Demo catalog for Kad AI. price_inr / original_price_inr are DEMONSTRATION prices in whole rupees, not live market prices.",
+  "categories": [
+    {
+      "slug": "fruits",
+      "name": "Fruits",
+      "description": "Seasonal and everyday fruits, sorted and packed fresh each morning.",
+      "children": [
+        {"slug": "everyday-fruits", "name": "Everyday Fruits", "description": "Apples, bananas, grapes and other fruits for the daily fruit bowl."},
+        {"slug": "citrus-fruits", "name": "Citrus Fruits", "description": "Oranges, sweet lime and lemons for juices, cooking and snacking."},
+        {"slug": "tropical-fruits", "name": "Tropical Fruits", "description": "Mangoes, pineapples, papayas, coconuts and other warm-climate favourites."}
+      ]
+    },
+    {
+      "slug": "vegetables",
+      "name": "Vegetables",
+      "description": "Kitchen staples and greens for everyday Indian cooking.",
+      "children": [
+        {"slug": "everyday-vegetables", "name": "Everyday Vegetables", "description": "Tomatoes, onions, potatoes and the vegetables you reach for every day."},
+        {"slug": "root-vegetables", "name": "Root Vegetables", "description": "Carrots, ginger, garlic, beetroot and sweet potatoes."},
+        {"slug": "leafy-greens", "name": "Leafy & Green Vegetables", "description": "Spinach, coriander, broccoli and other greens."}
+      ]
+    }
+  ],
+  "products": [
+    {"slug": "shimla-apple", "name": "Shimla Apple", "category": "everyday-fruits", "price_inr": 180, "original_price_inr": 220, "unit": "kg", "stock": 120, "rating": 4.5, "featured": true, "bestseller": true, "nutrition_key": "apple", "description": "Crisp, juicy red apples from Himachal orchards. Good for snacking, salads and lunch boxes."},
+    {"slug": "robusta-banana", "name": "Robusta Banana", "category": "everyday-fruits", "price_inr": 60, "unit": "dozen", "stock": 200, "rating": 4.6, "featured": true, "bestseller": true, "nutrition_key": "banana", "description": "Ripe yellow Robusta bananas with a soft, sweet bite. Sold by the dozen."},
+    {"slug": "seedless-green-grapes", "name": "Seedless Green Grapes", "category": "everyday-fruits", "price_inr": 90, "original_price_inr": 110, "unit": "500 g", "stock": 80, "rating": 4.3, "bestseller": true, "nutrition_key": "grapes", "description": "Sweet, seedless green grapes. Rinse just before eating and keep the rest refrigerated."},
+    {"slug": "bhagwa-pomegranate", "name": "Bhagwa Pomegranate", "category": "everyday-fruits", "price_inr": 220, "original_price_inr": 260, "unit": "kg", "stock": 60, "rating": 4.4, "featured": true, "nutrition_key": "pomegranate", "description": "Deep red Bhagwa pomegranates with juicy arils for salads, raita or fresh juice."},
+    {"slug": "allahabad-guava", "name": "Allahabad Guava", "category": "everyday-fruits", "price_inr": 80, "unit": "kg", "stock": 70, "rating": 4.2, "nutrition_key": "guava", "description": "Firm, fragrant guavas. Enjoy them plain or with a pinch of salt and chilli."},
+    {"slug": "green-pear", "name": "Green Pear", "category": "everyday-fruits", "price_inr": 160, "unit": "kg", "stock": 40, "rating": 4.0, "nutrition_key": "pear", "description": "Mild, juicy green pears. Leave at room temperature for a day or two to soften."},
+    {"slug": "kiran-watermelon", "name": "Kiran Watermelon", "category": "everyday-fruits", "price_inr": 70, "original_price_inr": 85, "unit": "piece", "stock": 35, "rating": 4.3, "bestseller": true, "nutrition_key": "watermelon", "description": "Whole Kiran watermelon, roughly 2 to 3 kg each, with sweet red flesh."},
+    {"slug": "muskmelon", "name": "Muskmelon", "category": "everyday-fruits", "price_inr": 60, "unit": "piece", "stock": 30, "rating": 4.1, "nutrition_key": "muskmelon", "description": "Fragrant orange-fleshed muskmelon, roughly 1 kg each. Chill before serving."},
+
+    {"slug": "nagpur-orange", "name": "Nagpur Orange", "category": "citrus-fruits", "price_inr": 120, "original_price_inr": 140, "unit": "kg", "stock": 90, "rating": 4.5, "featured": true, "bestseller": true, "nutrition_key": "orange", "description": "Easy-to-peel Nagpur oranges with a sweet and tangy taste."},
+    {"slug": "mosambi", "name": "Mosambi (Sweet Lime)", "category": "citrus-fruits", "price_inr": 90, "unit": "kg", "stock": 75, "rating": 4.2, "description": "Mild, juicy sweet lime, popular for fresh juice."},
+    {"slug": "lemon", "name": "Lemon", "category": "citrus-fruits", "price_inr": 40, "unit": "250 g", "stock": 100, "rating": 4.4, "nutrition_key": "lemon", "description": "Thin-skinned, juicy lemons for cooking, dressings and nimbu pani."},
+
+    {"slug": "alphonso-mango", "name": "Alphonso Mango", "category": "tropical-fruits", "price_inr": 600, "original_price_inr": 720, "unit": "dozen", "stock": 25, "rating": 4.8, "featured": true, "bestseller": true, "nutrition_key": "mango", "description": "Ratnagiri Alphonso mangoes, naturally ripened. Sold by the dozen."},
+    {"slug": "queen-pineapple", "name": "Queen Pineapple", "category": "tropical-fruits", "price_inr": 70, "unit": "piece", "stock": 40, "rating": 4.3, "featured": true, "nutrition_key": "pineapple", "description": "Sweet, aromatic Queen pineapple, about 1 kg each."},
+    {"slug": "tender-coconut", "name": "Tender Coconut", "category": "tropical-fruits", "price_inr": 50, "unit": "piece", "stock": 60, "rating": 4.5, "bestseller": true, "nutrition_key": "coconut_water", "description": "Green tender coconut with fresh coconut water and soft malai."},
+    {"slug": "red-lady-papaya", "name": "Red Lady Papaya", "category": "tropical-fruits", "price_inr": 55, "unit": "kg", "stock": 50, "rating": 4.2, "nutrition_key": "papaya", "description": "Red-fleshed papaya. Ready to eat when the skin turns mostly yellow."},
+    {"slug": "green-kiwi", "name": "Green Kiwi", "category": "tropical-fruits", "price_inr": 99, "original_price_inr": 120, "unit": "pack of 3", "stock": 0, "rating": 4.1, "nutrition_key": "kiwi", "description": "Tangy green kiwifruit, three per pack. Currently out of stock."},
+
+    {"slug": "hybrid-tomato", "name": "Hybrid Tomato", "category": "everyday-vegetables", "price_inr": 40, "unit": "kg", "stock": 150, "rating": 4.3, "featured": true, "bestseller": true, "nutrition_key": "tomato", "description": "Firm, red hybrid tomatoes for curries, chutneys and salads."},
+    {"slug": "nashik-red-onion", "name": "Nashik Red Onion", "category": "everyday-vegetables", "price_inr": 45, "original_price_inr": 50, "unit": "kg", "stock": 200, "rating": 4.4, "bestseller": true, "nutrition_key": "onion", "description": "Medium-sized red onions from Nashik. Store in a cool, dry, airy place."},
+    {"slug": "potato", "name": "Potato", "category": "everyday-vegetables", "price_inr": 35, "unit": "kg", "stock": 250, "rating": 4.3, "bestseller": true, "nutrition_key": "potato", "description": "All-purpose potatoes for curries, fries and sabzi. Keep away from sunlight."},
+    {"slug": "green-capsicum", "name": "Green Capsicum", "category": "everyday-vegetables", "price_inr": 40, "unit": "500 g", "stock": 60, "rating": 4.2, "featured": true, "nutrition_key": "capsicum", "description": "Glossy green capsicum for stir-fries, pizzas and pulao."},
+    {"slug": "cucumber", "name": "Cucumber", "category": "everyday-vegetables", "price_inr": 40, "unit": "kg", "stock": 90, "rating": 4.1, "nutrition_key": "cucumber", "description": "Crunchy cucumbers for salads, raita and sandwiches."},
+    {"slug": "cauliflower", "name": "Cauliflower", "category": "everyday-vegetables", "price_inr": 40, "unit": "piece", "stock": 45, "rating": 4.2, "nutrition_key": "cauliflower", "description": "Compact white cauliflower head, roughly 500 to 700 g."},
+    {"slug": "green-cabbage", "name": "Green Cabbage", "category": "everyday-vegetables", "price_inr": 30, "unit": "piece", "stock": 50, "rating": 4.0, "nutrition_key": "cabbage", "description": "Tight green cabbage head, roughly 700 g to 1 kg."},
+    {"slug": "ladys-finger", "name": "Lady's Finger (Okra)", "category": "everyday-vegetables", "price_inr": 35, "original_price_inr": 40, "unit": "500 g", "stock": 60, "rating": 4.1, "nutrition_key": "okra", "description": "Tender, young okra pods for bhindi fry and sambar."},
+    {"slug": "purple-brinjal", "name": "Purple Brinjal", "category": "everyday-vegetables", "price_inr": 45, "unit": "kg", "stock": 55, "rating": 4.0, "nutrition_key": "brinjal", "description": "Glossy purple brinjals for baingan bharta, curries and fries."},
+
+    {"slug": "ooty-carrot", "name": "Ooty Carrot", "category": "root-vegetables", "price_inr": 60, "original_price_inr": 70, "unit": "kg", "stock": 100, "rating": 4.5, "featured": true, "bestseller": true, "nutrition_key": "carrot", "description": "Sweet, bright orange carrots from the Nilgiris."},
+    {"slug": "fresh-ginger", "name": "Fresh Ginger", "category": "root-vegetables", "price_inr": 40, "unit": "250 g", "stock": 80, "rating": 4.4, "nutrition_key": "ginger", "description": "Aromatic fresh ginger root for tea, curries and pastes."},
+    {"slug": "garlic", "name": "Garlic", "category": "root-vegetables", "price_inr": 60, "unit": "250 g", "stock": 70, "rating": 4.3, "nutrition_key": "garlic", "description": "Firm garlic bulbs with large cloves."},
+    {"slug": "beetroot", "name": "Beetroot", "category": "root-vegetables", "price_inr": 50, "unit": "kg", "stock": 50, "rating": 4.0, "nutrition_key": "beetroot", "description": "Deep red beetroot for salads, poriyal and juice."},
+    {"slug": "sweet-potato", "name": "Sweet Potato", "category": "root-vegetables", "price_inr": 60, "unit": "kg", "stock": 40, "rating": 4.1, "nutrition_key": "sweet_potato", "description": "Sweet potatoes for roasting, boiling or chaat."},
+
+    {"slug": "broccoli", "name": "Broccoli", "category": "leafy-greens", "price_inr": 90, "original_price_inr": 110, "unit": "piece", "stock": 30, "rating": 4.4, "featured": true, "nutrition_key": "broccoli", "description": "Fresh green broccoli head, roughly 300 to 400 g."},
+    {"slug": "palak-spinach", "name": "Palak (Spinach)", "category": "leafy-greens", "price_inr": 30, "unit": "bunch", "stock": 60, "rating": 4.3, "nutrition_key": "spinach", "description": "Tender spinach leaves for palak paneer, dal and soups. Wash well before use."},
+    {"slug": "coriander-leaves", "name": "Coriander Leaves", "category": "leafy-greens", "price_inr": 15, "unit": "bunch", "stock": 80, "rating": 4.2, "nutrition_key": "coriander", "description": "Fragrant coriander bunch for garnishing and chutneys."},
+
+    {"slug": "jamun", "name": "Jamun", "category": "tropical-fruits", "price_inr": 150, "unit": "kg", "stock": 0, "rating": 4.0, "active": false, "description": "Seasonal jamun. Hidden from the store until the season starts."}
+  ]
+}

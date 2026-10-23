@@ -1,0 +1,22 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "backend",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m", "uvicorn", "app.main:app", "--port", "8000", "--reload",
+        "--app-dir", "C:/Users/Admin/Desktop/kad_ai/backend",
+        "--reload-dir", "C:/Users/Admin/Desktop/kad_ai/backend/app"
+      ],
+      "port": 8000,
+      "url": "http://127.0.0.1:8000"
+    },
+    {
+      "name": "frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "C:/Users/Admin/Desktop/kad_ai/frontend", "run", "dev"],
+      "port": 3000
+    }
+  ]
+}

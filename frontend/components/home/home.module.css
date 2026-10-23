@@ -1,0 +1,619 @@
+/* Hero ----------------------------------------------------------------------- */
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 380px;
+  height: 100%;
+  padding: 2.5rem;
+  border-radius: var(--km-radius);
+  background: var(--km-cream);
+  overflow: hidden;
+}
+
+.heroText {
+  position: relative;
+  z-index: 1;
+  max-width: 52%;
+}
+
+.heroText h1 {
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+  line-height: 1.15;
+  margin: 0.25rem 0 0.5rem;
+}
+
+.heroPrice {
+  margin: 0.75rem 0 1.25rem;
+  color: var(--km-price);
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.heroPrice span {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--km-muted);
+}
+
+.heroPrice small {
+  font-size: 0.95rem;
+  color: var(--km-muted);
+  font-weight: 400;
+}
+
+.heroImage {
+  position: absolute;
+  inset-inline-end: 4%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(42%, 340px);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 0 14px rgba(255, 255, 255, 0.7);
+}
+
+.heroImage img {
+  object-fit: cover;
+}
+
+.sideBanner {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 180px;
+  padding: 1.5rem;
+  border-radius: var(--km-radius);
+  color: var(--km-ink);
+  overflow: hidden;
+}
+
+.sideBanner:hover {
+  color: var(--km-ink);
+}
+
+.sideBanner h2 {
+  font-size: 1.15rem;
+  line-height: 1.3;
+  margin: 0.2rem 0 0.8rem;
+}
+
+.sideCream {
+  background: var(--km-cream);
+}
+
+.sideGreen {
+  background: var(--km-green-soft);
+}
+
+.sideImage {
+  position: relative;
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.sideImage img {
+  object-fit: cover;
+}
+
+.fakeBtn,
+.fakeBtnLight {
+  display: inline-block;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  background: var(--km-green);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.fakeBtnLight {
+  background: #fff;
+  color: var(--km-ink);
+}
+
+.sideBanner:hover .fakeBtn {
+  background: var(--km-green-dark);
+}
+
+/* Services ------------------------------------------------------------------- */
+.services {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--km-border);
+  border-radius: var(--km-radius);
+}
+
+.service {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.service i {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--km-green-soft);
+  color: var(--km-green);
+  font-size: 1.2rem;
+}
+
+.service strong {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.service small {
+  color: var(--km-muted);
+  font-size: 0.75rem;
+}
+
+/* Category circles ------------------------------------------------------------ */
+.catRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.catCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 1rem 0.5rem;
+  border: 1px solid var(--km-border);
+  border-radius: var(--km-radius);
+  color: var(--km-ink);
+  text-align: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.catCard:hover {
+  color: var(--km-green-dark);
+  border-color: #d6e6c6;
+  box-shadow: var(--km-shadow-sm);
+}
+
+.catImage {
+  width: 92px;
+  height: 92px;
+  margin-bottom: 0.5rem;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--km-cream);
+}
+
+.catImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.catCard strong {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.catCard small {
+  font-size: 0.75rem;
+  color: var(--km-muted);
+}
+
+/* Promo banners ---------------------------------------------------------------- */
+.promo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 190px;
+  height: 100%;
+  border-radius: var(--km-radius);
+  overflow: hidden;
+  color: #fff;
+}
+
+.promo img {
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.promo:hover img {
+  transform: scale(1.04);
+}
+
+.promo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(18, 50, 29, 0.78) 0%, rgba(18, 50, 29, 0.35) 60%, rgba(18, 50, 29, 0.1) 100%);
+}
+
+.promoText {
+  position: relative;
+  z-index: 1;
+  padding: 1.5rem;
+  max-width: 70%;
+}
+
+.promoText > span:first-child {
+  font-size: 0.75rem;
+  color: var(--km-gold);
+}
+
+.promoText h3 {
+  color: #fff;
+  font-size: 1.25rem;
+  line-height: 1.3;
+  margin: 0.25rem 0 0.9rem;
+}
+
+.promo:hover {
+  color: #fff;
+}
+
+.delivery {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  height: 100%;
+  min-height: 190px;
+  padding: 1.5rem 2rem;
+  border-radius: var(--km-radius);
+  background: var(--km-cream);
+}
+
+.delivery > i {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--km-green);
+  font-size: 2.6rem;
+}
+
+.delivery h3 {
+  font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+  margin-bottom: 0.4rem;
+}
+
+.delivery p {
+  color: var(--km-muted);
+  font-size: 0.875rem;
+}
+
+/* Deal + collection ------------------------------------------------------------ */
+.deal {
+  height: 100%;
+  padding: 1.25rem;
+  border: 2px solid var(--km-green);
+  border-radius: var(--km-radius);
+  text-align: center;
+}
+
+.dealTitle {
+  font-size: 1.35rem;
+  margin-bottom: 1rem;
+}
+
+.dealImage {
+  position: relative;
+  display: block;
+  margin: 0 auto 0.75rem;
+  max-width: 220px;
+}
+
+.dealImage img {
+  width: 100%;
+  height: auto;
+  border-radius: 50%;
+}
+
+.dealBadge {
+  position: absolute;
+  top: 6px;
+  inset-inline-end: 6px;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--km-gold);
+  color: var(--km-ink);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.dealName {
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.dealName a {
+  color: var(--km-ink);
+}
+
+.deal > div {
+  text-align: start;
+}
+
+.tabsHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.tab,
+.tabActive {
+  border: 1px solid var(--km-border);
+  border-radius: 999px;
+  padding: 0.35rem 1rem;
+  font-size: 0.8125rem;
+  background: #fff;
+  color: var(--km-ink);
+}
+
+.tab:hover {
+  border-color: var(--km-green);
+  color: var(--km-green-dark);
+}
+
+.tabActive {
+  background: var(--km-green);
+  border-color: var(--km-green);
+  color: #fff;
+}
+
+/* Testimonials ------------------------------------------------------------------ */
+.review {
+  height: 100%;
+  margin: 0;
+  padding: 1.25rem;
+  background: #fff;
+  border-radius: var(--km-radius);
+  box-shadow: var(--km-shadow-sm);
+}
+
+.reviewStars {
+  color: var(--km-star);
+  letter-spacing: 2px;
+}
+
+.review blockquote {
+  margin: 0.6rem 0 1rem;
+  font-size: 0.85rem;
+  color: var(--km-muted);
+  line-height: 1.6;
+}
+
+.review figcaption {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--km-green-soft);
+  color: var(--km-green-dark);
+  font-weight: 600;
+}
+
+/* Partners ------------------------------------------------------------------------ */
+.partners {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+
+.partner {
+  padding: 1rem;
+  border: 1px solid var(--km-border);
+  border-radius: var(--km-radius-sm);
+  text-align: center;
+  font-weight: 600;
+  color: var(--km-muted);
+  font-size: 0.9rem;
+}
+
+.partner i {
+  color: var(--km-green);
+}
+
+/* Farmer story ----------------------------------------------------------------------- */
+.farmerImage {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  border-radius: var(--km-radius);
+  overflow: hidden;
+}
+
+.farmerImage img {
+  object-fit: cover;
+}
+
+.farmerTitle {
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  margin: 0.25rem 0 1rem;
+}
+
+.checks {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 1.5rem;
+}
+
+.checks li {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.checks i {
+  color: var(--km-green);
+  margin-inline-end: 0.4rem;
+}
+
+/* Kitchen tips ------------------------------------------------------------------------ */
+.tip {
+  height: 100%;
+}
+
+.tipImage {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--km-radius);
+  overflow: hidden;
+  margin-bottom: 0.8rem;
+}
+
+.tipImage img {
+  object-fit: cover;
+}
+
+.tip h3 {
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+}
+
+.tip p {
+  font-size: 0.8125rem;
+  color: var(--km-muted);
+  margin: 0;
+}
+
+/* Newsletter ------------------------------------------------------------------------------ */
+.newsletter {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  min-height: 280px;
+  border-radius: var(--km-radius);
+  background: var(--km-cream);
+  overflow: hidden;
+}
+
+.newsletterText {
+  flex: 0 1 560px; /* text keeps a readable width ... */
+  min-width: 0;
+  align-self: center;
+  padding: 2.5rem;
+}
+
+.newsletterText h2 {
+  font-size: clamp(1.6rem, 3vw, 2.3rem);
+}
+
+.newsletterText p {
+  color: var(--km-muted);
+}
+
+.newsletterField {
+  display: flex;
+  background: #fff;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--km-border);
+}
+
+.newsletterField input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  padding: 0.75rem 1.2rem;
+  outline: none;
+  font-size: 0.875rem;
+}
+
+.newsletterField button {
+  border: 0;
+  background: var(--km-green);
+  color: #fff;
+  padding: 0 1.4rem;
+  font-weight: 500;
+}
+
+.newsletterField button:hover {
+  background: var(--km-green-dark);
+}
+
+.newsletterDone {
+  color: var(--km-green-dark) !important;
+  font-weight: 500;
+}
+
+.newsletterImage {
+  position: relative;
+  flex: 1 1 0; /* ... and the photo fills all the remaining width, edge to edge */
+  min-width: 0;
+}
+
+.newsletterImage img {
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Responsive ------------------------------------------------------------------------------- */
+@media (max-width: 767.98px) {
+  .hero {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.75rem;
+  }
+
+  .heroText {
+    max-width: 100%;
+  }
+
+  .heroImage {
+    position: relative;
+    inset-inline-end: auto;
+    top: auto;
+    transform: none;
+    width: 70%;
+    margin: 1.5rem auto 0;
+  }
+
+  .delivery {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .newsletterImage {
+    display: none;
+  }
+
+  .newsletterText {
+    padding: 1.75rem;
+  }
+}

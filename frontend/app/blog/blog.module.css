@@ -1,0 +1,29 @@
+.post {
+  height: 100%;
+  border: 1px solid var(--km-border);
+  border-radius: var(--km-radius);
+  overflow: hidden;
+}
+
+.image {
+  position: relative;
+  aspect-ratio: 16 / 9;
+}
+
+.image img {
+  object-fit: cover;
+}
+
+.body {
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.body h2 {
+  font-size: 1.15rem;
+  margin: 0.3rem 0 0.75rem;
+}
+
+.body p {
+  color: var(--km-muted);
+  font-size: 0.9rem;
+}

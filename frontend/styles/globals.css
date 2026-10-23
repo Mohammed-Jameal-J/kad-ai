@@ -1,0 +1,227 @@
+/* Kad AI design system. Imported after Bootstrap so these tokens win. */
+
+:root {
+  /* Brand palette (from the Kad AI logo) */
+  --km-brand-dark: #235e36;   /* dark green: buttons, headings, small text (7.9:1 on white) */
+  --km-brand-leaf: #6a9942;   /* leaf green: accents and large elements only (3.3:1, too light for small text) */
+  --km-brand-light: #8bc34a;  /* light green: highlights, focus rings */
+  --km-brand-cream: #faf0dc;  /* cream: backgrounds that match the logo */
+  --km-brand-gold: #d4a017;   /* gold accent: badges, stars, highlights */
+
+  /* Semantic tokens used across the site */
+  --km-green: var(--km-brand-dark);
+  --km-green-dark: #1a4728;
+  --km-green-accent: #557d33; /* leaf, darkened just enough for small text (4.8:1) */
+  --km-green-soft: #eef4e4;
+  --km-cream: var(--km-brand-cream);
+  --km-cream-dark: #efe0bf;
+  --km-gold: var(--km-brand-gold);
+  --km-ink: #26372b;
+  --km-muted: #6b7a6f;
+  --km-border: #e7e3d6;
+  --km-price: #c2410c;
+  --km-star: var(--km-brand-gold);
+  --km-white: #ffffff;
+  --km-radius: 14px;
+  --km-radius-sm: 8px;
+  --km-shadow: 0 8px 24px rgba(35, 94, 54, 0.1);
+  --km-shadow-sm: 0 2px 8px rgba(35, 94, 54, 0.07);
+
+  --km-font-heading: var(--font-dm-serif), Georgia, "Times New Roman", serif;
+  --bs-body-font-family: var(--font-lexend), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bs-body-color: var(--km-ink);
+  --bs-body-font-size: 0.9375rem;
+  --bs-link-color: var(--km-green);
+  --bs-link-color-rgb: 35, 94, 54;
+  --bs-link-hover-color: var(--km-green-accent);
+  --bs-link-hover-color-rgb: 85, 125, 51;
+  --bs-border-color: var(--km-border);
+  --bs-focus-ring-color: rgba(139, 195, 74, 0.45);
+}
+
+body {
+  background: var(--km-white);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Brand headings: DM Serif Display matches the logo wordmark (it has one weight, 400). */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--km-green);
+  font-family: var(--km-font-heading);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  border-color: var(--km-green);
+  box-shadow: 0 0 0 0.2rem var(--bs-focus-ring-color);
+}
+
+.form-check-input:checked {
+  background-color: var(--km-green);
+  border-color: var(--km-green);
+}
+
+/* Buttons ------------------------------------------------------------------ */
+.btn-km {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--km-green);
+  --bs-btn-border-color: var(--km-green);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--km-green-dark);
+  --bs-btn-hover-border-color: var(--km-green-dark);
+  --bs-btn-active-bg: var(--km-green-dark);
+  --bs-btn-active-border-color: var(--km-green-dark);
+  --bs-btn-disabled-bg: #9db7a3;
+  --bs-btn-disabled-border-color: #9db7a3;
+  --bs-btn-font-weight: 500;
+  --bs-btn-border-radius: 999px;
+  --bs-btn-padding-x: 1.25rem;
+}
+
+.btn-km-outline {
+  --bs-btn-color: var(--km-green-dark);
+  --bs-btn-border-color: var(--km-green);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--km-green);
+  --bs-btn-hover-border-color: var(--km-green);
+  --bs-btn-active-bg: var(--km-green-dark);
+  --bs-btn-font-weight: 500;
+  --bs-btn-border-radius: 999px;
+}
+
+.btn-km-light {
+  --bs-btn-color: var(--km-ink);
+  --bs-btn-bg: #fff;
+  --bs-btn-border-color: #fff;
+  --bs-btn-hover-bg: var(--km-green-soft);
+  --bs-btn-hover-border-color: var(--km-green-soft);
+  --bs-btn-font-weight: 500;
+  --bs-btn-border-radius: 999px;
+}
+
+/* Section headings like "Trending items / New products" ---------------------- */
+.km-section {
+  /* vertical only: this class is also combined with .container, whose side padding must survive */
+  padding-block: 3rem;
+}
+
+.km-section-head {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.km-eyebrow {
+  display: block;
+  color: var(--km-green-accent);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.km-section-title {
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+  margin: 0;
+}
+
+.km-muted {
+  color: var(--km-muted);
+}
+
+.km-note {
+  font-size: 0.8125rem;
+  color: var(--km-muted);
+}
+
+/* Product grid --------------------------------------------------------------- */
+.km-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .km-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1200px) {
+  .km-grid { grid-template-columns: repeat(var(--km-cols, 6), minmax(0, 1fr)); }
+}
+
+/* Skeletons (loading states) ------------------------------------------------- */
+.km-skeleton {
+  background: linear-gradient(90deg, #f1f3f4 25%, #e8ebed 37%, #f1f3f4 63%);
+  background-size: 400% 100%;
+  border-radius: var(--km-radius-sm);
+  animation: km-shimmer 1.4s ease infinite;
+}
+
+@keyframes km-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .km-skeleton { animation: none; }
+}
+
+/* Toast ---------------------------------------------------------------------- */
+.km-toast-region {
+  position: fixed;
+  left: 50%;
+  bottom: 1.25rem;
+  transform: translateX(-50%);
+  z-index: 1080;
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+}
+
+.km-toast {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  box-shadow: var(--km-shadow);
+  font-size: 0.875rem;
+  color: #fff;
+}
+
+.km-toast-success { background: var(--km-green-dark); }
+.km-toast-error { background: #b42318; }
+
+/* Misc ----------------------------------------------------------------------- */
+.km-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  border: 1px dashed var(--km-border);
+  border-radius: var(--km-radius);
+  color: var(--km-muted);
+}
+
+.km-empty i {
+  font-size: 2rem;
+  color: var(--km-green);
+}
+
+.km-breadcrumb-band {
+  background: var(--km-cream);
+  padding: 1.1rem 0;
+  font-size: 0.8125rem;
+}
+
+.km-breadcrumb-band .breadcrumb {
+  margin: 0;
+  --bs-breadcrumb-divider-color: var(--km-muted);
+  --bs-breadcrumb-item-active-color: var(--km-muted);
+}

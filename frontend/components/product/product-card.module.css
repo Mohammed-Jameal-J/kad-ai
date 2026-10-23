@@ -1,0 +1,153 @@
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid var(--km-border);
+  border-radius: var(--km-radius);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+  border-color: #d6e6c6;
+  box-shadow: var(--km-shadow);
+}
+
+.imageWrap {
+  display: block;
+  aspect-ratio: 1 / 1;
+  padding: 0.75rem 0.75rem 0;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .image {
+  transform: scale(1.03);
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 0.75rem 0.9rem 0.9rem;
+}
+
+.category {
+  font-size: 0.72rem;
+  color: var(--km-muted);
+}
+
+.name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.35;
+  margin: 0.15rem 0 0.3rem;
+  min-height: 2.4em;
+}
+
+.name a {
+  color: var(--km-ink);
+}
+
+.name a:hover {
+  color: var(--km-green);
+}
+
+.rating {
+  color: var(--km-star);
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+}
+
+.footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.6rem;
+}
+
+.price {
+  color: var(--km-price);
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+.price del,
+.priceLarge del {
+  color: var(--km-muted);
+  font-weight: 400;
+  font-size: 0.75em;
+  margin-inline-start: 0.35rem;
+}
+
+.price small,
+.priceLarge small {
+  display: block;
+  color: var(--km-muted);
+  font-weight: 400;
+  font-size: 0.7rem;
+}
+
+.priceLarge {
+  color: var(--km-price);
+  font-weight: 600;
+  font-size: 1.9rem;
+}
+
+.priceLarge small {
+  display: inline;
+  font-size: 0.95rem;
+}
+
+.cartBtn {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid #d6e6c6;
+  background: var(--km-green-soft);
+  color: var(--km-green-dark);
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+}
+
+.cartBtn:hover:not(:disabled) {
+  background: var(--km-green);
+  border-color: var(--km-green);
+  color: #fff;
+}
+
+.cartBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.badge {
+  position: absolute;
+  top: 1.1rem;
+  inset-inline-start: 1.1rem;
+  z-index: 1;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: var(--km-price);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.badgeOut {
+  inset-inline-start: auto;
+  inset-inline-end: 1.1rem;
+  background: var(--km-ink);
+}

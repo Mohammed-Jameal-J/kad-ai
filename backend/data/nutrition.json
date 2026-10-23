@@ -1,0 +1,4 @@
+{
+  "_note": "Nutrient values per serving_size_g, copied from a cited public source (e.g. USDA FoodData Central, https://fdc.nal.usda.gov). Only add values you copied from the source; set verified=true after double-checking. Keys must match products' nutrition_key in catalog.json. Fields: key, food_description, source_name, source_id, source_url, serving_size_g, energy_kcal, protein_g, carbohydrate_g, fiber_g, sugars_g, fat_g, vitamin_c_mg, potassium_mg, verified.",
+  "references": []
+}
