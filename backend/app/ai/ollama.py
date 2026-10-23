@@ -84,6 +84,8 @@ class OllamaClient:
             self._lock.release()
 
     def _request(self, method: str, path: str, **kwargs) -> dict:
+        if not settings.ai_enabled:  # every model call goes through here
+            raise OllamaError("The AI models run only in the local version of Kad AI; this demo uses quick rules and search.")
         try:
             r = self._http.request(method, path, **kwargs)
         except httpx.ConnectError:

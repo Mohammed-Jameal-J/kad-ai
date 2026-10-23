@@ -1,0 +1,25 @@
+# Render Blueprint for the Kad AI API (FastAPI). Render dashboard → New → Blueprint → this repo.
+# Free plan: sleeps after 15 min idle (first request then takes ~30-60 s) and the SQLite file
+# resets on every deploy/restart, which re-seeds the demo catalog. No Ollama here: AI_ENABLED=false.
+services:
+  - type: web
+    name: kad-ai-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --no-proxy-headers
+    healthCheckPath: /api/categories
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.9
+      - key: AI_ENABLED
+        value: "false"
+      - key: OLLAMA_PREWARM
+        value: "false"
+      - key: COOKIE_SECURE
+        value: "true"
+      # Vercel sets x-real-ip to the visitor's IP on requests it proxies here.
+      - key: TRUSTED_IP_HEADER
+        value: x-real-ip
+      # No CORS_ORIGINS needed: browsers only talk to Vercel, which proxies /api/* here.

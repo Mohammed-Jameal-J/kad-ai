@@ -106,3 +106,14 @@ def test_api_sends_security_headers(client):
     assert h["x-frame-options"] == "DENY"
     assert h["cache-control"] == "no-store"
     assert "cache-control" not in client.get("/api/categories").headers  # public catalog stays cacheable
+
+
+def test_ai_disabled_still_answers_with_rules_and_search(client, monkeypatch):
+    from app.core.config import settings
+    monkeypatch.setattr(settings, "ai_enabled", False)
+    ok = client.post("/api/assistant/chat", json={"message": "Add two kilograms of apples to my cart"}).json()
+    assert ok["parser"] == "rules" and ok["pending_action"]
+    fallback = client.post("/api/assistant/chat", json={"message": "Which apples are good?"}).json()
+    assert fallback["parser"] == "fallback" and fallback["products"]
+    assert "local version" in fallback["notes"][0]
+    assert client.get("/api/assistant/status").json()["reachable"] is False

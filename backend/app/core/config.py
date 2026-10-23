@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     # Session cookie only over HTTPS. Keep false for http://localhost; set true when deployed.
     cookie_secure: bool = False
 
+    # false on hosts without Ollama (e.g. Render free): no model calls, the assistant uses its rules
+    # and a plain search, and says the AI runs in the local version.
+    ai_enabled: bool = True
     ollama_base_url: str = "http://localhost:11434"
     ollama_intent_model: str = "qwen3:4b"
     ollama_response_model: str = "llama3.2"

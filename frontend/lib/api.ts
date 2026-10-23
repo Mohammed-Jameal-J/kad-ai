@@ -21,7 +21,7 @@ async function get<T>(path: string, params: object = {}): Promise<T> {
   try {
     res = await fetch(`${API_URL}${path}${toQuery(params)}`);
   } catch {
-    throw new ApiError(503, "The Kad AI API is not reachable. Is the backend running on port 8000?");
+    throw new ApiError(503, "The store server is waking up or not reachable. Please refresh in a few seconds.");
   }
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
