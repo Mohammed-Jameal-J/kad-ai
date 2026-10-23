@@ -100,6 +100,7 @@ export type ChatResponse = {
   pending_action: PendingAction | null;
   nutrition: { product_id: number; product_name: string; nutrition: Nutrition | null }[];
   notes: string[];
+  sources?: { title: string; url: string }[]; // web pages behind a web-search answer
   parser: string;
   writer: string;
   duration_ms: number;

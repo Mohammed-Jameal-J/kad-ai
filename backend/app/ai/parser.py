@@ -8,7 +8,6 @@ import json
 import re
 
 from app.ai.ollama import OllamaClient
-from app.core.config import settings
 from app.schemas.assistant import ChatTurn, ParsedRequest
 
 CATEGORY_WORDS = {"fruit": "fruits", "vegetable": "vegetables", "veggie": "vegetables", "veg": "vegetables"}
@@ -191,7 +190,7 @@ def llm_parse(ollama: OllamaClient, message: str, history: list[ChatTurn]) -> Pa
         context = "\n".join(f"{t.role}: {t.content[:300]}" for t in history[-4:])
         message = f"Earlier conversation (context only):\n{context}\n\nCurrent message: {message}"
     messages.append({"role": "user", "content": message})
-    parsed = ollama.chat_json(settings.ollama_intent_model, messages, ParsedRequest, temperature=0, max_tokens=120)
+    parsed = ollama.chat_json(ollama.intent_model, messages, ParsedRequest, temperature=0, max_tokens=120)
     # Small models sometimes "helpfully" add products nobody named; keep only words the customer used.
     said = {normalize(w) for w in re.findall(r"[a-z]+", message.lower())}
     parsed.keywords = [k for k in parsed.keywords if all(normalize(w) in said for w in k.split())]

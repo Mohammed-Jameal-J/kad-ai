@@ -9,7 +9,7 @@ const SERVICES = [
   { icon: "bi-sunrise", title: "Packed fresh daily", text: "Sorted and packed every morning" },
   { icon: "bi-truck", title: "Next-day delivery", text: "Choose a slot from 8 AM to 8 PM" },
   { icon: "bi-shield-check", title: "Server-verified prices", text: "Totals are always calculated by our backend" },
-  { icon: "bi-cpu", title: "Local AI assistant", text: "Runs on your machine with Ollama" },
+  { icon: "bi-cpu", title: "AI shopping assistant", text: "Answers from our own product data" },
 ];
 
 export function ServiceStrip() {

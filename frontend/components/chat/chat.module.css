@@ -309,6 +309,17 @@
   margin-top: 0.4rem;
 }
 
+.sources {
+  margin: 0;
+  padding-inline-start: 1.2rem;
+  font-size: 0.75rem;
+}
+
+.sources a {
+  color: var(--km-green);
+  word-break: break-word;
+}
+
 .notes {
   margin: 0;
   padding-inline-start: 1rem;

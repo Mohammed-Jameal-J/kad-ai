@@ -116,6 +116,18 @@ MESSAGES: dict[str, dict[str, str]] = {
     },
     "nothing_added": {"en": "Nothing has been added yet.", "es": "Todavía no se ha añadido nada.", "ar": "لم تتم إضافة أي شيء بعد.", "hi": "अभी कुछ भी नहीं जोड़ा गया है।"},
     "add_summary": {"en": "Add {items}", "es": "Añadir {items}", "ar": "أضف {items}", "hi": "{items} जोड़ें"},
+    "web_intro": {
+        "en": "Here is what I found on the web:",
+        "es": "Esto es lo que encontré en la web:",
+        "ar": "هذا ما وجدته على الإنترنت:",
+        "hi": "वेब पर मुझे यह मिला:",
+    },
+    "web_note": {
+        "en": "From web sources, not checked by Kad AI. Prices and stock come only from our store.",
+        "es": "De fuentes web, no verificado por Kad AI. Los precios y el stock vienen solo de nuestra tienda.",
+        "ar": "من مصادر على الإنترنت ولم يتحقق منها Kad AI. الأسعار والمخزون من متجرنا فقط.",
+        "hi": "वेब स्रोतों से, Kad AI द्वारा जाँचा नहीं गया। कीमतें और स्टॉक केवल हमारे स्टोर से आते हैं।",
+    },
     "help": {
         "en": "I can help you shop for fruits and vegetables. Try:",
         "es": "Puedo ayudarte a comprar frutas y verduras. Prueba:",

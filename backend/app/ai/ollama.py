@@ -48,6 +48,8 @@ class OllamaClient:
         queue_wait: float = settings.ollama_queue_wait,
         transport: httpx.BaseTransport | None = None,  # tests pass httpx.MockTransport
     ):
+        self.intent_model = settings.ollama_intent_model
+        self.response_model = settings.ollama_response_model
         self.keep_alive = keep_alive
         self.num_ctx = num_ctx
         self._http = httpx.Client(
@@ -215,12 +217,17 @@ class OllamaClient:
             raise OllamaError(f"Model '{model}' returned output in an unexpected format")
 
 
-_client: OllamaClient | None = None
+_client = None
 
 
 def get_ollama() -> OllamaClient:
-    """FastAPI dependency; tests override it with a client using a mock transport."""
+    """FastAPI dependency: the configured LLM client (Ollama, or Groq when LLM_PROVIDER=groq).
+    Tests override it with a client using a mock transport."""
     global _client
     if _client is None:
-        _client = OllamaClient()
+        if settings.llm_provider == "groq":
+            from app.ai.groq import GroqClient  # imported here: groq.py imports this module
+            _client = GroqClient()
+        else:
+            _client = OllamaClient()
     return _client

@@ -55,6 +55,10 @@ class RateLimiter:
         with self._lock:
             self._prune(key, self._clock()).append(self._clock())
 
+    def used(self, key: str) -> int:
+        with self._lock:
+            return len(self._prune(key, self._clock()))
+
     def reset(self, key: str) -> None:
         with self._lock:
             self._hits.pop(key, None)

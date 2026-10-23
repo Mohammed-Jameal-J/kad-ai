@@ -23,7 +23,7 @@ logger = logging.getLogger("kadai")
 async def lifespan(_app: FastAPI):
     added = init_db()
     logger.info("Database ready, seed added %s", added)
-    if settings.ollama_prewarm:
+    if settings.ollama_prewarm and settings.llm_provider == "ollama":
         threading.Thread(target=_prewarm, daemon=True).start()
     yield
 

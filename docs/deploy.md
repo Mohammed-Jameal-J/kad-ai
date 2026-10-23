@@ -7,13 +7,10 @@ Visitor ──► Vercel: Next.js storefront ──/api/* rewrite──► Rende
 
 The browser only ever talks to Vercel, so there is no CORS setup and the login cookie stays on
 your Vercel domain. Ollama can't run on free hosting (a model needs 3-4 GB RAM, Render free has
-512 MB), so the cloud API runs with `AI_ENABLED=false`:
+512 MB), so the cloud API uses Groq's hosted models instead (step 5).
 
-| Works in the demo | Needs the local version |
-|---|---|
-| Shop, cart, checkout, login, contact, 4 languages | Free-form AI answers (qwen/llama) |
-| Chat rules: "add 2 kg apples", "fruits under ₹200", "suggest fruits within ₹500", compare/benefit lookups, greetings, 18+ refusal | AI-written comparisons |
-| Anything else: a plain product search with the note "AI runs in the local version" | CrewAI |
+With `GROQ_API_KEY` set (step 5) the live chat has full AI through Groq. Without it, the chat
+answers with rules and a plain product search. CrewAI stays local-only.
 
 ## 1. Push the code
 
@@ -23,7 +20,7 @@ Render and Vercel deploy from GitHub, so `render.yaml` and the latest code must 
 
 1. Sign in at https://render.com with GitHub.
 2. **New → Blueprint** → pick the `kad-ai` repository → it reads `render.yaml` → **Apply**.
-   (Settings it creates: root `backend`, free plan, Python 3.12.9, `AI_ENABLED=false`,
+   (Settings it creates: root `backend`, free plan, Python 3.12.9, `LLM_PROVIDER=groq`,
    `COOKIE_SECURE=true`, `TRUSTED_IP_HEADER=x-real-ip`.)
 3. Wait for "Live" (first build ~3 min). Copy the URL, e.g. `https://kad-ai-api.onrender.com`.
 4. Check it: open `https://kad-ai-api.onrender.com/api/categories`, you should see JSON.
@@ -42,10 +39,37 @@ Render and Vercel deploy from GitHub, so `render.yaml` and the latest code must 
 
 - Home page shows products and live prices → Vercel reaches Render.
 - Chat: "Add two kilograms of apples to my cart" → instant, Confirm/Cancel.
-- Chat: "do you deliver on sunday?" → help text and the "local version" note (expected).
+- Chat: "How do I store bananas?" → an AI answer with web sources (after step 5).
 - Register, log in, place a demo order.
 
-## 5. Emails with Resend (welcome + newsletter)
+## 5. Live AI with Groq + web search with Serper
+
+The live API uses Groq's hosted models (`LLM_PROVIDER=groq`) instead of Ollama:
+`openai/gpt-oss-20b` understands the question (JSON), `llama-3.3-70b-versatile` writes answers.
+All the same guards apply: validated JSON, keyword filter, price guard, cart changes need Confirm.
+
+1. https://console.groq.com → sign in → **API Keys → Create API Key**. Stay on the free plan
+   (no card), so it can never cost money: when the free quota runs out, the chat falls back to rules.
+2. https://serper.dev → sign up → copy the API key (free: 2,500 searches).
+3. Render → `kad-ai-api` → **Environment** → add `GROQ_API_KEY` and `SERPER_API_KEY` → **Save, rebuild and deploy**.
+4. Check: `https://kad-ai-api.onrender.com/api/assistant/status` shows `"provider": "groq", "reachable": true`.
+   In the chat, "Papaya or pineapple, which one is sweeter?" shows `openai/gpt-oss-20b → llama-3.3-70b-versatile`;
+   "How do I store bananas?" shows web sources under the answer.
+
+Limits (change them under Environment):
+
+| Setting | Default | Protects |
+|---|---|---|
+| `CHAT_PER_MINUTE` | 10 per visitor | spam |
+| `GROQ_DAILY_LIMIT` | 500 AI calls/day, everyone together | Groq free quota |
+| `SEARCH_DAILY_LIMIT` | 100 searches/day, everyone together | Serper credits (2,500 total) |
+| `SEARCH_PER_IP_PER_HOUR` | 5 per visitor | one person using up the searches |
+
+Web search only runs for food questions the store data can't answer (recipes, storage, ripeness,
+season, and nutrition while no verified data exists). Its answer never contains prices, cites its
+sources, and says it isn't checked by Kad AI. Questions like "who won the match?" never reach Serper.
+
+## 6. Emails with Resend (welcome + newsletter)
 
 1. Sign up at https://resend.com → **API Keys → Create API Key** (permission: Sending access). Copy it once.
 2. Render → `kad-ai-api` → **Environment** → add `RESEND_API_KEY` = the key → **Save, rebuild and deploy**.

@@ -76,6 +76,11 @@ class ProductNutrition(BaseModel):
     nutrition: NutritionOut | None  # None = no verified reference available
 
 
+class Source(BaseModel):
+    title: str
+    url: str  # https only (checked in ai/websearch.py)
+
+
 class ChatResponse(BaseModel):
     reply: str
     intent: Intent
@@ -84,6 +89,7 @@ class ChatResponse(BaseModel):
     pending_action: PendingAction | None = None
     nutrition: list[ProductNutrition] = []
     notes: list[str] = []
+    sources: list[Source] = []  # web pages behind a web-search answer
     parser: str  # "rules", the intent model name, or "fallback"
     writer: str  # "template" or the response model name
     duration_ms: int

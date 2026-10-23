@@ -8,6 +8,7 @@ must confirm; the frontend then calls the normal cart API, which validates again
 Replies are produced in the customer's UI language: templates via app/ai/messages.py, and the
 response model is asked to write in that language.
 """
+import re
 import time
 
 from sqlalchemy import select
@@ -16,7 +17,8 @@ from sqlalchemy.orm import Session
 from app.ai.messages import HELP_EXAMPLES, t
 from app.ai.ollama import OllamaClient, OllamaError
 from app.ai.parser import is_adult_request, is_greeting, llm_parse, normalize, product_vocabulary, quick_parse
-from app.ai.writer import write
+from app.ai import websearch
+from app.ai.writer import write, write_from_web
 from app.core.config import settings
 from app.models import Product
 from app.schemas.assistant import ChatRequest, ParsedRequest
@@ -177,7 +179,7 @@ def handle_nutrition(db: Session, ollama: OllamaClient, parsed: ParsedRequest, m
     facts = {"products": [product_facts(p, refs.get(p.nutrition_key)) for p in products]}
     text = write(ollama, message, facts, allowed_prices(products), lang)
     if text:
-        result.update(reply=f"{text}\n\n{not_medical}", writer=settings.ollama_response_model)
+        result.update(reply=f"{text}\n\n{not_medical}", writer=ollama.response_model)
     else:
         result["reply"] = "\n".join(
             t(lang, "nutrition_line", name=p.name, source=refs[p.nutrition_key].source_name, values=", ".join(
@@ -202,7 +204,7 @@ def handle_compare(db: Session, ollama: OllamaClient, parsed: ParsedRequest, mes
     text = write(ollama, message, facts, allowed_prices(products), lang)
     result = {"products": products, "notes": [t(lang, "not_medical")] if refs else []}
     if text:
-        result.update(reply=text + note, writer=settings.ollama_response_model)
+        result.update(reply=text + note, writer=ollama.response_model)
     else:
         result["reply"] = t(lang, "side_by_side") + "\n" + "\n".join(describe(p, lang) for p in products) + note
     return result
@@ -293,6 +295,25 @@ def handle_add_to_cart(db: Session, parsed: ParsedRequest, lang: str = "en", **_
     return result
 
 
+def handle_web(db: Session, ollama: OllamaClient, parsed: ParsedRequest, message: str, lang: str, client: str) -> dict | None:
+    """General produce question answered from web search, with sources. None = search not possible."""
+    try:
+        results = websearch.search(f"{message} fruits vegetables", client)
+    except websearch.SearchUnavailable:
+        return None
+    if not results:
+        return None
+    text, writer = write_from_web(ollama, message, results, lang), ollama.response_model
+    if text is None:  # no model available: show the snippets themselves
+        text = t(lang, "web_intro") + "\n" + "\n".join(f"• {r['title']}: {r['snippet']}" for r in results[:3])
+        writer = "template"
+    products, _ = first_match_per_keyword(db, parsed.keywords) if parsed.keywords else ([], [])
+    return {
+        "reply": text, "writer": writer, "products": products, "notes": [t(lang, "web_note")],
+        "sources": [{"title": r["title"] or r["url"], "url": r["url"]} for r in results],
+    }
+
+
 def handle_other(lang: str = "en", **_) -> dict:
     return {"reply": t(lang, "help") + "\n" + HELP_EXAMPLES}
 
@@ -307,7 +328,12 @@ GREETING_REPLY = t("en", "greeting")
 BLOCKED_REPLY = t("en", "blocked")
 
 
-def chat(db: Session, ollama: OllamaClient, request: ChatRequest) -> dict:
+def is_food_question(message: str, vocabulary: set[str]) -> bool:
+    words = {normalize(w) for w in re.findall(r"[a-z]+", message.lower())}
+    return bool(words & (vocabulary | websearch.FOOD_TOPICS))
+
+
+def chat(db: Session, ollama: OllamaClient, request: ChatRequest, client: str = "unknown") -> dict:
     started = time.perf_counter()
     lang = request.lang
 
@@ -326,7 +352,7 @@ def chat(db: Session, ollama: OllamaClient, request: ChatRequest) -> dict:
     parsed, parser = quick_parse(request.message, vocabulary), "rules"
     if parsed is None:
         try:
-            parsed, parser = llm_parse(ollama, request.message, request.history), settings.ollama_intent_model
+            parsed, parser = llm_parse(ollama, request.message, request.history), ollama.intent_model
         except OllamaError as e:
             parsed, parser = quick_parse(request.message, vocabulary, strict=False), "fallback"
             notes.append(t(lang, "ai_unavailable", detail=e.detail))
@@ -336,6 +362,12 @@ def chat(db: Session, ollama: OllamaClient, request: ChatRequest) -> dict:
     result = {"writer": "template", "notes": [], **HANDLERS[parsed.intent](
         db=db, ollama=ollama, parsed=parsed, message=request.message, lang=lang,
     )}
+    # Help text, or no verified nutrition data: a food question can still be answered from the web.
+    no_answer = parsed.intent == "other" or (
+        parsed.intent == "nutrition" and not any(n["nutrition"] for n in result.get("nutrition", [])))
+    if no_answer and websearch.available() and is_food_question(request.message, vocabulary):
+        if web := handle_web(db, ollama, parsed, request.message, lang, client):
+            result = {**result, **web, "nutrition": []}
     result["notes"] = notes + result["notes"]
     return {**result, "intent": parsed.intent, "parser": parser,
             "duration_ms": int((time.perf_counter() - started) * 1000)}

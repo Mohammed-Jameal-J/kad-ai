@@ -28,5 +28,6 @@ def chat(body: ChatRequest, db: Annotated[Session, Depends(get_db)], ollama: Oll
     Cart changes are only proposed (`pending_action`); confirm them with POST /api/cart/items.
     Send previous turns in `history` to keep conversation context (the server stores none).
     """
-    enforce(CHAT_PER_IP, client_ip(request))
-    return assistant.chat(db, ollama, body)
+    ip = client_ip(request)
+    enforce(CHAT_PER_IP, ip)
+    return assistant.chat(db, ollama, body, client=ip)

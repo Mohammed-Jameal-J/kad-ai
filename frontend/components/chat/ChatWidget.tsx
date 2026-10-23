@@ -244,6 +244,19 @@ function Extras({ msg, onAdd, onConfirm, onCancel }: ExtrasProps) {
         </div>
       )}
 
+      {data.sources?.length ? (
+        <ol className={s.sources}>
+          {data.sources
+            .filter((src) => src.url.startsWith("https://")) // backend checks too; never render other schemes
+            .map((src) => (
+              <li key={src.url}>
+                <a href={src.url} target="_blank" rel="noopener noreferrer nofollow">
+                  {src.title} <i className="bi bi-box-arrow-up-right" aria-hidden="true" />
+                </a>
+              </li>
+            ))}
+        </ol>
+      ) : null}
       {notes.length > 0 && <ul className={s.notes}>{notes.map((n) => <li key={n}>{n}</li>)}</ul>}
       <span className={s.meta}>
         {data.parser}{data.writer !== "template" ? ` → ${data.writer}` : ""} · {(data.duration_ms / 1000).toFixed(1)}s
