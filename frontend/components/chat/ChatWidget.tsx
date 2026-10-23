@@ -121,8 +121,8 @@ export default function ChatWidget() {
   if (!open) {
     return (
       <button type="button" className={s.launcher} onClick={() => setOpen(true)} aria-label={t("chatOpen")}>
-        <Image src="/brand/ask-kad-ai-logo.png" alt={ASK_LOGO_ALT} width={527} height={160} className={s.launcherLogo} />
         <Image src="/brand/ask-kad-ai-icon.png" alt="" width={192} height={192} className={s.launcherIcon} />
+        <span className={s.launcherLabel} aria-hidden="true">Ask Kad AI</span>
       </button>
     );
   }

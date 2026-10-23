@@ -122,7 +122,6 @@ export function Testimonials() {
             </figure>
           ))}
         </AutoSlider>
-        <p className="km-note text-center mt-3 mb-0">Sample reviews for this demo store.</p>
       </div>
     </section>
   );
@@ -142,7 +141,6 @@ export function PartnerStrip() {
             </div>
           ))}
         </div>
-        <p className="km-note text-center mt-3 mb-0">Illustrative partner names for this demo.</p>
       </div>
     </section>
   );

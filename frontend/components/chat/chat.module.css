@@ -1,3 +1,4 @@
+/* Round stall-and-headset icon; the "Ask Kad AI" label slides out on hover or keyboard focus. */
 .launcher {
   position: fixed;
   inset-inline-end: 1.25rem;
@@ -5,7 +6,7 @@
   z-index: 1060;
   display: flex;
   align-items: center;
-  padding: 0.45rem 1rem;
+  padding: 0.3rem;
   border: 2px solid var(--km-brand-leaf);
   border-radius: 999px;
   background: var(--km-cream);
@@ -18,15 +19,34 @@
   box-shadow: 0 14px 32px rgba(35, 94, 54, 0.38);
 }
 
-.launcherLogo {
-  height: 40px;
-  width: auto;
+.launcherIcon {
+  display: block;
+  width: 50px;
+  height: 50px;
 }
 
-.launcherIcon {
-  display: none;
-  height: 44px;
-  width: auto;
+.launcherLabel {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  color: var(--km-green);
+  font-family: var(--km-font-heading);
+  font-size: 1.2rem;
+  transition: max-width 0.35s ease, opacity 0.25s ease, padding 0.35s ease;
+}
+
+.launcher:hover .launcherLabel,
+.launcher:focus-visible .launcherLabel {
+  max-width: 10rem;
+  opacity: 1;
+  padding-inline: 0.45rem 0.85rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .launcherLabel {
+    transition: none;
+  }
 }
 
 .panel {
@@ -385,17 +405,4 @@
     border: 0;
   }
 
-  /* Phones: round button with just the stall-and-headset icon */
-  .launcher {
-    padding: 0.35rem;
-    border-radius: 50%;
-  }
-
-  .launcherLogo {
-    display: none;
-  }
-
-  .launcherIcon {
-    display: block;
-  }
 }
