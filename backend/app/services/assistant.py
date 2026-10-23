@@ -20,7 +20,7 @@ from app.ai.parser import (
     is_about_question, is_adult_request, is_greeting, llm_parse, normalize, product_vocabulary, quick_parse, spell,
 )
 from app.ai import websearch
-from app.ai.writer import write, write_from_web
+from app.ai.writer import unsafe_web_text, write, write_from_web
 from app.core.config import settings
 from app.models import Product
 from app.schemas.assistant import ChatRequest, ParsedRequest
@@ -306,8 +306,10 @@ def handle_web(db: Session, ollama: OllamaClient, parsed: ParsedRequest, message
     if not results:
         return None
     text, writer = write_from_web(ollama, message, results, lang), ollama.response_model
-    if text is None:  # no model available: show the snippets themselves
-        text = t(lang, "web_intro") + "\n" + "\n".join(f"• {r['title']}: {r['snippet']}" for r in results[:3])
+    if text is None:  # no model, or its answer broke a rule: show the snippets that pass the same check
+        safe = [r for r in results if not unsafe_web_text(f"{r['title']} {r['snippet']}")][:3]
+        text = (t(lang, "web_intro") + "\n" + "\n".join(f"• {r['title']}: {r['snippet']}" for r in safe)
+                if safe else t(lang, "web_see_sources"))
         writer = "template"
     products, _ = first_match_per_keyword(db, parsed.keywords) if parsed.keywords else ([], [])
     return {

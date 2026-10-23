@@ -186,3 +186,59 @@ def test_taste_words():
     assert is_taste_question("Which is juicier, mango or orange?")
     assert is_taste_question("Is guava crunchy?")
     assert not is_taste_question("Which is cheaper, mango or orange?")  # price: our data answers it
+
+
+@pytest.mark.parametrize("text", [
+    "Mango is low in calories—one cup of fresh mango has under 100 calories [3].",  # seen live
+    "Apples are linked with lower chances of heart disease and type-2 diabetes [2].",  # seen live
+    "A banana has about 422 mg of potassium.",
+    "Guava gives 200% of your daily vitamin C.",
+    "Oranges cost Rs. 99 at most shops.",
+])
+def test_unsafe_web_answers_are_caught(text):
+    from app.ai.writer import unsafe_web_text
+    assert unsafe_web_text(text)
+
+
+@pytest.mark.parametrize("text", [
+    "Store bananas at room temperature, about 20 °C, away from apples to prevent early browning [1].",
+    "Mango is naturally sweet and makes a great smoothie or lassi [2].",
+    "Keep 2 or 3 lemons in a paper bag in the fridge for up to two weeks.",
+])
+def test_safe_web_answers_pass(text):
+    from app.ai.writer import unsafe_web_text
+    assert not unsafe_web_text(text)
+
+
+def test_rejected_web_answer_falls_back_to_safe_snippets_only(client, monkeypatch):
+    from fakes import FakeOllama, make_client
+    monkeypatch.setattr(settings, "serper_api_key", "serper_test")
+    monkeypatch.setattr(websearch, "search", lambda query, client: [
+        {"title": "Mango calories", "url": "https://example.com/a", "snippet": "One cup has 99 calories."},
+        {"title": "Eating mango", "url": "https://example.com/b", "snippet": "Enjoy ripe mango chilled or in a smoothie."},
+    ])
+    app.dependency_overrides[get_ollama] = lambda: make_client(FakeOllama({
+        "qwen3:4b": {"intent": "other", "keywords": ["mango"]},
+        "llama3.2": "Mango has under 100 calories and lowers diabetes risk [1].",  # breaks both rules
+    }))
+    try:
+        body = client.post("/api/assistant/chat", json={"message": "What are the advantages of eating mango?"}).json()
+    finally:
+        app.dependency_overrides.clear()
+    assert body["writer"] == "template"
+    assert "smoothie" in body["reply"] and "calories" not in body["reply"] and "diabetes" not in body["reply"]
+    assert len(body["sources"]) == 2  # the pages are still linked for the customer to read
+
+
+def test_all_snippets_unsafe_points_to_sources(client, monkeypatch):
+    from fakes import FakeOllama, make_client
+    monkeypatch.setattr(settings, "serper_api_key", "serper_test")
+    monkeypatch.setattr(websearch, "search", lambda query, client: [
+        {"title": "Mango and diabetes", "url": "https://example.com/a", "snippet": "Mango may help with blood pressure."},
+    ])
+    app.dependency_overrides[get_ollama] = lambda: make_client(FakeOllama({"qwen3:4b": {"intent": "other", "keywords": ["mango"]}, "llama3.2": ""}))
+    try:
+        body = client.post("/api/assistant/chat", json={"message": "Is mango healthy to eat?"}).json()
+    finally:
+        app.dependency_overrides.clear()
+    assert "can't verify" in body["reply"] and "diabetes" not in body["reply"] and body["sources"]

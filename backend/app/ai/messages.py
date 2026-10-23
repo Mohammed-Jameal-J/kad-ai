@@ -122,6 +122,16 @@ MESSAGES: dict[str, dict[str, str]] = {
         "ar": "هذا ما وجدته على الإنترنت:",
         "hi": "वेब पर मुझे यह मिला:",
     },
+    "web_see_sources": {
+        "en": "I found pages about this, but they mention health claims or nutrient figures I can't verify. "
+              "Please check the sources below, and ask a doctor or dietitian for health advice.",
+        "es": "Encontré páginas sobre esto, pero mencionan afirmaciones de salud o cifras nutricionales que no puedo "
+              "verificar. Revisa las fuentes de abajo y consulta a un médico o nutricionista.",
+        "ar": "وجدت صفحات عن هذا، لكنها تذكر ادعاءات صحية أو أرقامًا غذائية لا يمكنني التحقق منها. "
+              "راجع المصادر أدناه واستشر طبيبًا أو أخصائي تغذية.",
+        "hi": "मुझे इस बारे में पेज मिले, लेकिन उनमें स्वास्थ्य दावे या पोषण के आँकड़े हैं जिन्हें मैं जाँच नहीं सकता। "
+              "नीचे दिए स्रोत देखें और स्वास्थ्य सलाह के लिए डॉक्टर या डाइटिशियन से पूछें।",
+    },
     "web_note": {
         "en": "From web sources, not checked by Kad AI. Prices and stock come only from our store.",
         "es": "De fuentes web, no verificado por Kad AI. Los precios y el stock vienen solo de nuestra tienda.",
