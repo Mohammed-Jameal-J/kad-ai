@@ -38,3 +38,11 @@ class ContactMessage(Base):
     email: Mapped[str] = mapped_column(String(254))
     message: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
+class NewsletterSubscriber(Base):
+    __tablename__ = "newsletter_subscribers"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(String(254), unique=True)  # stored lower-case
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())

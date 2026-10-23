@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Cookie, Depends, Request, Response
+from fastapi import APIRouter, BackgroundTasks, Cookie, Depends, Request, Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
@@ -8,10 +8,10 @@ from app.core.config import settings
 from app.core.errors import TooManyAttempts
 from app.core.ratelimit import RateLimiter, client_ip, enforce
 from app.db.session import get_db
-from app.models import ContactMessage, Order, User
+from app.models import ContactMessage, NewsletterSubscriber, Order, User
 from app.schemas.order import OrderOut
-from app.schemas.user import ContactRequest, LoginRequest, RegisterRequest, UserOut
-from app.services import auth
+from app.schemas.user import ContactRequest, LoginRequest, NewsletterRequest, RegisterRequest, UserOut
+from app.services import auth, email
 
 router = APIRouter(prefix="/api", tags=["account"])
 DB = Annotated[Session, Depends(get_db)]
@@ -44,6 +44,7 @@ LOGIN_FAILURES = RateLimiter(limit=5, window_seconds=15 * 60)
 LOGIN_FAILURES_PER_IP = RateLimiter(limit=20, window_seconds=15 * 60)
 REGISTRATIONS_PER_IP = RateLimiter(limit=10, window_seconds=60 * 60)
 CONTACT_PER_IP = RateLimiter(limit=5, window_seconds=60 * 60)
+NEWSLETTER_PER_IP = RateLimiter(limit=5, window_seconds=60 * 60)
 
 
 def _check(limiter: RateLimiter, key: str) -> None:
@@ -52,11 +53,12 @@ def _check(limiter: RateLimiter, key: str) -> None:
 
 
 @router.post("/auth/register", response_model=UserOut, status_code=201)
-def register(body: RegisterRequest, db: DB, request: Request, response: Response):
+def register(body: RegisterRequest, db: DB, request: Request, response: Response, background: BackgroundTasks):
     ip = client_ip(request)
     enforce(REGISTRATIONS_PER_IP, ip)
     user = auth.register(db, body.name, body.email, body.password)
     _start_session(db, user, response)  # registering also logs you in
+    background.add_task(email.send_welcome, user.email, user.name)  # after the response: no waiting on Resend
     return user
 
 
@@ -104,3 +106,15 @@ def contact(body: ContactRequest, db: DB, request: Request):
     db.add(ContactMessage(name=body.name, email=body.email, message=body.message))
     db.commit()
     return {"status": "received"}
+
+
+@router.post("/newsletter", status_code=201)
+def subscribe(body: NewsletterRequest, db: DB, request: Request, background: BackgroundTasks):
+    """Same answer for new and existing addresses, so the endpoint can't be used to test who subscribed.
+    The confirmation email goes only to new subscribers."""
+    enforce(NEWSLETTER_PER_IP, client_ip(request))
+    if db.scalar(select(NewsletterSubscriber).where(NewsletterSubscriber.email == body.email)) is None:
+        db.add(NewsletterSubscriber(email=body.email))
+        db.commit()
+        background.add_task(email.send_newsletter_confirmation, body.email)
+    return {"status": "subscribed"}

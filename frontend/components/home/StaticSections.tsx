@@ -1,6 +1,7 @@
 // Homepage sections that need no API data. Copy is original; reviews and partner names are samples.
 import Image from "next/image";
 import Link from "next/link";
+import AutoSlider from "./AutoSlider";
 import { SectionHead } from "./ProductSection";
 import s from "./home.module.css";
 
@@ -88,10 +89,12 @@ export function DeliveryBanners() {
 }
 
 const REVIEWS = [
-  { name: "Priya S.", text: "The oranges were sweet and the tomatoes lasted the whole week. Packing was neat and plastic-light." },
-  { name: "Arun K.", text: "I asked the assistant for fruits under ₹300 and it gave me a basket that actually fit my budget." },
-  { name: "Meena R.", text: "Good palak and coriander, fresh enough for chutney the next day. Delivery slot was on time." },
-  { name: "Karthik V.", text: "Clear prices per kg and per dozen, so I always know what I am paying for. Easy to reorder." },
+  { name: "Priya S.", place: "Coimbatore", bought: "Nagpur oranges", text: "The oranges were sweet and the tomatoes lasted the whole week. Packing was neat and plastic-light." },
+  { name: "Arun K.", place: "Tiruppur", bought: "AI budget basket", text: "I asked the assistant for fruits under ₹300 and it gave me a basket that actually fit my budget." },
+  { name: "Meena R.", place: "Pollachi", bought: "Palak and coriander", text: "Good palak and coriander, fresh enough for chutney the next day. Delivery slot was on time." },
+  { name: "Karthik V.", place: "Erode", bought: "Weekly vegetables", text: "Clear prices per kg and per dozen, so I always know what I am paying for. Easy to reorder." },
+  { name: "Fathima N.", place: "Coimbatore", bought: "Alphonso mangoes", text: "The mangoes were ripe on day two, exactly as described. My kids finished the box in a weekend." },
+  { name: "Suresh P.", place: "Salem", bought: "Ooty carrots", text: "Crunchy carrots and clean potatoes. Checkout was quick and the order page showed every item clearly." },
 ];
 
 export function Testimonials() {
@@ -99,22 +102,26 @@ export function Testimonials() {
     <section className="km-section" style={{ background: "var(--km-cream)" }}>
       <div className="container">
         <SectionHead eyebrow="Testimonials" title="What shoppers say" />
-        <div className="row g-3">
-          {REVIEWS.map((r) => (
-            <div key={r.name} className="col-12 col-sm-6 col-lg-3">
-              <figure className={s.review}>
-                <span className={s.reviewStars} aria-label="5 out of 5">
-                  {"★★★★★"}
+        <AutoSlider label="Customer reviews" slideClassName={s.reviewSlide} className={s.reviewTrack}>
+          {REVIEWS.map((r, i) => (
+            <figure key={r.name} className={`${s.review} ${i % 3 === 1 ? s.reviewGreen : ""}`}>
+              <i className={`bi bi-quote ${s.reviewQuote}`} aria-hidden="true" />
+              <span className={s.reviewStars} role="img" aria-label="5 out of 5 stars">
+                {"★★★★★"}
+              </span>
+              <blockquote>{r.text}</blockquote>
+              <figcaption>
+                <span className={s.avatar} aria-hidden="true">{r.name[0]}</span>
+                <span>
+                  <strong>{r.name}</strong>
+                  <small>
+                    {r.place} · {r.bought}
+                  </small>
                 </span>
-                <blockquote>{r.text}</blockquote>
-                <figcaption>
-                  <span className={s.avatar}>{r.name[0]}</span>
-                  {r.name}
-                </figcaption>
-              </figure>
-            </div>
+              </figcaption>
+            </figure>
           ))}
-        </div>
+        </AutoSlider>
         <p className="km-note text-center mt-3 mb-0">Sample reviews for this demo store.</p>
       </div>
     </section>

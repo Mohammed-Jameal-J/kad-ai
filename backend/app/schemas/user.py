@@ -38,3 +38,7 @@ class UserOut(BaseModel):
 class ContactRequest(_Email):
     name: str = Field(..., min_length=2, max_length=80)
     message: str = Field(..., min_length=10, max_length=2000)
+
+
+class NewsletterRequest(_Email):
+    pass

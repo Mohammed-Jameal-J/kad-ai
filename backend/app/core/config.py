@@ -21,6 +21,12 @@ class Settings(BaseSettings):
     # Session cookie only over HTTPS. Keep false for http://localhost; set true when deployed.
     cookie_secure: bool = False
 
+    # Email through Resend (https://resend.com). Empty key = emails are skipped.
+    # onboarding@resend.dev only delivers to your own Resend account email; verify a domain to email anyone.
+    resend_api_key: str = ""
+    email_from: str = "Kad AI <onboarding@resend.dev>"
+    site_url: str = "http://localhost:3000"  # link in emails
+
     # false on hosts without Ollama (e.g. Render free): no model calls, the assistant uses its rules
     # and a plain search, and says the AI runs in the local version.
     ai_enabled: bool = True

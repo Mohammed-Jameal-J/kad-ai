@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { DM_Serif_Display, Lexend } from "next/font/google";
+import { Suspense } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "@/styles/globals.css";
 import "@/styles/rtl.css";
 import ChatWidget from "@/components/chat/ChatWidget";
+import SpinOffer from "@/components/promo/SpinOffer";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import { AuthProvider } from "@/hooks/useAuth";
@@ -29,6 +31,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <main>{children}</main>
             <Footer />
             <ChatWidget />
+            {/* usePathname() is request data: Cache Components needs it inside Suspense */}
+            <Suspense fallback={null}>
+              <SpinOffer />
+            </Suspense>
           </CartProvider>
         </AuthProvider>
       </body>

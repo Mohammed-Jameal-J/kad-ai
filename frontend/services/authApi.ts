@@ -41,3 +41,6 @@ export const myOrders = () => call<Order[]>("/orders/mine");
 
 export const sendContact = (name: string, email: string, message: string) =>
   call<{ status: string }>("/contact", { method: "POST", body: JSON.stringify({ name, email, message }) });
+
+export const subscribeNewsletter = (email: string) =>
+  call<{ status: string }>("/newsletter", { method: "POST", body: JSON.stringify({ email }) });

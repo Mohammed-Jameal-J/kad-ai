@@ -2,9 +2,9 @@
 from app.models.cart import Cart, CartItem
 from app.models.catalog import Category, NutritionReference, Product
 from app.models.order import Order, OrderItem
-from app.models.user import ContactMessage, User, UserSession
+from app.models.user import ContactMessage, NewsletterSubscriber, User, UserSession
 
 __all__ = [
-    "Cart", "CartItem", "Category", "ContactMessage", "NutritionReference", "Order", "OrderItem",
+    "Cart", "CartItem", "Category", "ContactMessage", "NewsletterSubscriber", "NutritionReference", "Order", "OrderItem",
     "Product", "User", "UserSession",
 ]

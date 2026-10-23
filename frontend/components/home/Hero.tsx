@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { getProduct } from "@/lib/api";
 import { rupees } from "@/lib/format";
-import HeroSlider from "./HeroSlider";
+import AutoSlider from "./AutoSlider";
 import s from "./home.module.css";
 
 // Each slide links to a real product; its price is read live from the API.
@@ -30,7 +30,7 @@ export default function Hero() {
     <section className="container pt-4">
       <div className="row g-3">
         <div className="col-12 col-lg-8">
-          <HeroSlider label="Seasonal picks">
+          <AutoSlider label="Seasonal picks" slideClassName={s.slide}>
             {SLIDES.map((slide, i) => (
               <div key={slide.slug} className={`${s.hero} ${slide.tone}`}>
                 <div className={s.heroText}>
@@ -51,7 +51,7 @@ export default function Hero() {
                 </div>
               </div>
             ))}
-          </HeroSlider>
+          </AutoSlider>
         </div>
         <div className="col-12 col-lg-4 d-flex flex-column gap-3">
           <Link href="/category/fruits" className={`${s.sideBanner} ${s.sideCream}`}>

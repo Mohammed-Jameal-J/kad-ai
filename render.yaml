@@ -22,4 +22,9 @@ services:
       # Vercel sets x-real-ip to the visitor's IP on requests it proxies here.
       - key: TRUSTED_IP_HEADER
         value: x-real-ip
+      - key: SITE_URL
+        value: https://kad-ai.vercel.app
+      # Secret: Render asks for it (or set it under Environment). Empty = no emails.
+      - key: RESEND_API_KEY
+        sync: false
       # No CORS_ORIGINS needed: browsers only talk to Vercel, which proxies /api/* here.

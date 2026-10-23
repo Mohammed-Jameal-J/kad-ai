@@ -45,6 +45,18 @@ Render and Vercel deploy from GitHub, so `render.yaml` and the latest code must 
 - Chat: "do you deliver on sunday?" → help text and the "local version" note (expected).
 - Register, log in, place a demo order.
 
+## 5. Emails with Resend (welcome + newsletter)
+
+1. Sign up at https://resend.com → **API Keys → Create API Key** (permission: Sending access). Copy it once.
+2. Render → `kad-ai-api` → **Environment** → add `RESEND_API_KEY` = the key → **Save, rebuild and deploy**.
+   Never commit the key or put it in Vercel (only the backend sends email).
+3. Test: register on the live site with the **same email you used for Resend** → a welcome email arrives;
+   subscribe to the newsletter → a confirmation arrives. Resend dashboard → **Emails** shows each send.
+
+Sandbox limit: with the default sender `onboarding@resend.dev`, Resend only delivers to your own account
+email (others get 403, logged as "Email not sent", and registration still succeeds). To email any
+customer, add and verify a domain in Resend (DNS records), then set `EMAIL_FROM="Kad AI <hello@yourdomain>"`.
+
 ## Good to know
 
 - **Cold start**: Render free sleeps after 15 min idle. The first visit after that can take
