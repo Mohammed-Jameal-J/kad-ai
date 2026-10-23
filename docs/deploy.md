@@ -45,7 +45,7 @@ Render and Vercel deploy from GitHub, so `render.yaml` and the latest code must 
 ## 5. Live AI with Groq + web search with Serper
 
 The live API uses Groq's hosted models (`LLM_PROVIDER=groq`) instead of Ollama:
-`openai/gpt-oss-20b` understands the question (JSON), `llama-3.3-70b-versatile` writes answers.
+`openai/gpt-oss-20b` understands the question (JSON), `openai/gpt-oss-120b` writes answers.
 All the same guards apply: validated JSON, keyword filter, price guard, cart changes need Confirm.
 
 1. https://console.groq.com → sign in → **API Keys → Create API Key**. Stay on the free plan
@@ -53,7 +53,7 @@ All the same guards apply: validated JSON, keyword filter, price guard, cart cha
 2. https://serper.dev → sign up → copy the API key (free: 2,500 searches).
 3. Render → `kad-ai-api` → **Environment** → add `GROQ_API_KEY` and `SERPER_API_KEY` → **Save, rebuild and deploy**.
 4. Check: `https://kad-ai-api.onrender.com/api/assistant/status` shows `"provider": "groq", "reachable": true`.
-   In the chat, "Papaya or pineapple, which one is sweeter?" shows `openai/gpt-oss-20b → llama-3.3-70b-versatile`;
+   In the chat, "Papaya or pineapple, which one is sweeter?" shows `openai/gpt-oss-20b → openai/gpt-oss-120b`;
    "How do I store bananas?" shows web sources under the answer.
 
 Limits (change them under Environment):

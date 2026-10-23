@@ -41,12 +41,13 @@ def test_groq_json_request_shape_and_validation(groq_on):
     assert body["model"] == settings.groq_intent_model
     assert body["response_format"]["type"] == "json_schema"
     assert body["reasoning_effort"] == "low"  # gpt-oss intent model
+    assert body["max_completion_tokens"] > 120  # room for hidden reasoning
 
 
 def test_groq_errors_become_fallback_errors(groq_on, monkeypatch):
     busy = groq_client(lambda body: httpx.Response(429, json={"error": "rate"}))
     with pytest.raises(OllamaError, match="busy"):
-        busy.chat("llama-3.3-70b-versatile", [{"role": "user", "content": "hi"}])
+        busy.chat("openai/gpt-oss-120b", [{"role": "user", "content": "hi"}])
     bad_json = groq_client(lambda body: completion("not json"))
     with pytest.raises(OllamaError, match="unexpected format"):
         bad_json.chat_json(bad_json.intent_model, [{"role": "user", "content": "x"}], ParsedRequest)

@@ -60,7 +60,10 @@ class GroqClient:
             # Best-effort schema (strict mode needs every field required); Pydantic is the real gate.
             body["response_format"] = {"type": "json_schema", "json_schema": {"name": "answer", "strict": False, "schema": schema}}
         if model.startswith("openai/gpt-oss"):
-            body["reasoning_effort"] = "low"  # reasoning model: keep it quick for extraction
+            # Reasoning model: hidden reasoning tokens count toward the limit, so give it room
+            # or the visible answer comes back empty.
+            body["reasoning_effort"] = "low"
+            body["max_completion_tokens"] = max_tokens + 1024
         started = time.perf_counter()
         data = self._post(body)
         usage = data.get("usage", {})

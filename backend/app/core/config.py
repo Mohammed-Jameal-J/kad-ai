@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     llm_provider: str = "ollama"
     groq_api_key: str = ""  # secret: .env / host settings only
     groq_intent_model: str = "openai/gpt-oss-20b"  # JSON extraction, very fast
-    groq_response_model: str = "llama-3.3-70b-versatile"  # customer-facing text
+    groq_response_model: str = "openai/gpt-oss-120b"  # customer-facing text (Llama models need an enterprise plan)
     groq_daily_limit: int = 500  # all visitors together; over it the assistant uses rules only
     # Web search (https://serper.dev) for general produce questions: recipes, storage, season.
     # Never used for prices, stock or nutrition numbers. Empty key = off.
