@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.core.config import settings
 from app.core.errors import TooManyAttempts
-from app.core.ratelimit import RateLimiter, client_ip
+from app.core.ratelimit import RateLimiter, client_ip, enforce
 from app.db.session import get_db
 from app.models import ContactMessage, Order, User
 from app.schemas.order import OrderOut
@@ -54,8 +54,7 @@ def _check(limiter: RateLimiter, key: str) -> None:
 @router.post("/auth/register", response_model=UserOut, status_code=201)
 def register(body: RegisterRequest, db: DB, request: Request, response: Response):
     ip = client_ip(request)
-    _check(REGISTRATIONS_PER_IP, ip)
-    REGISTRATIONS_PER_IP.record(ip)
+    enforce(REGISTRATIONS_PER_IP, ip)
     user = auth.register(db, body.name, body.email, body.password)
     _start_session(db, user, response)  # registering also logs you in
     return user
@@ -101,8 +100,7 @@ def my_orders(db: DB, user: Annotated[User, Depends(require_user)]):
 def contact(body: ContactRequest, db: DB, request: Request):
     # ponytail: stored only, no email is sent; rate limited per IP against spam.
     ip = client_ip(request)
-    _check(CONTACT_PER_IP, ip)
-    CONTACT_PER_IP.record(ip)
+    enforce(CONTACT_PER_IP, ip)
     db.add(ContactMessage(name=body.name, email=body.email, message=body.message))
     db.commit()
     return {"status": "received"}

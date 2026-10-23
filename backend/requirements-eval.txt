@@ -1,0 +1,4 @@
+-r requirements.txt
+# Quality evals only (not needed to run the app). Local Ollama judge, no paid APIs.
+deepeval==4.3.1
+ollama==0.6.3  # Python HTTP client for DeepEval's local judge (downloads no models)

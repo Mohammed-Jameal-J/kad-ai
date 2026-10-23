@@ -28,6 +28,9 @@ class OllamaError(ServiceError):
     status_code = 503
 
 
+BUSY = "The assistant is busy with other customers. Please try again in a moment."
+
+
 def _full_name(model: str) -> str:
     """Ollama lists "llama3.2" as "llama3.2:latest"."""
     return model if ":" in model else f"{model}:latest"
@@ -41,6 +44,8 @@ class OllamaClient:
         num_ctx: int = settings.ollama_num_ctx,
         connect_timeout: float = settings.ollama_connect_timeout,
         read_timeout: float = settings.ollama_read_timeout,
+        max_waiting: int = settings.ollama_max_waiting,
+        queue_wait: float = settings.ollama_queue_wait,
         transport: httpx.BaseTransport | None = None,  # tests pass httpx.MockTransport
     ):
         self.keep_alive = keep_alive
@@ -53,6 +58,30 @@ class OllamaClient:
         # ponytail: one global lock, fine for one local machine. Use a job queue if several users share it.
         self._lock = threading.Lock()
         self._last_model: str | None = None
+        self.max_waiting = max_waiting
+        self.queue_wait = queue_wait
+        self._waiting = 0
+        self._waiting_lock = threading.Lock()
+
+    @contextmanager
+    def _slot(self):
+        """The model lock, but bounded: a flood of requests gets 503 "busy" instead of tying up
+        every server thread for minutes."""
+        with self._waiting_lock:
+            if self._waiting >= self.max_waiting:
+                raise OllamaError(BUSY, headers={"Retry-After": "30"})
+            self._waiting += 1
+        try:
+            acquired = self._lock.acquire(timeout=self.queue_wait)
+        finally:
+            with self._waiting_lock:
+                self._waiting -= 1
+        if not acquired:
+            raise OllamaError(BUSY, headers={"Retry-After": "30"})
+        try:
+            yield
+        finally:
+            self._lock.release()
 
     def _request(self, method: str, path: str, **kwargs) -> dict:
         try:
@@ -117,7 +146,7 @@ class OllamaClient:
     def exclusive(self, model: str):
         """Hold the model lock for an outside caller (the CrewAI workflow) and make sure `model`
         is installed and is the only model in RAM while it runs."""
-        with self._lock:
+        with self._slot():
             self._capabilities(model)
             for loaded in self.loaded_models():
                 if loaded["name"] != _full_name(model):
@@ -138,7 +167,7 @@ class OllamaClient:
 
         `schema` (a JSON schema) makes Ollama constrain the output to valid JSON of that shape.
         """
-        with self._lock:
+        with self._slot():
             caps = self._capabilities(model)
             if self._last_model and self._last_model != model:
                 self.unload(self._last_model)

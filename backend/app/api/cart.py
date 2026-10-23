@@ -1,9 +1,10 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends, Header, Request
 from sqlalchemy.orm import Session
 
+from app.core.ratelimit import RateLimiter, client_ip, enforce
 from app.db.session import get_db
 from app.schemas.cart import CartItemCreate, CartItemUpdate, CartOut
 from app.services import cart as cart_service
@@ -12,6 +13,8 @@ router = APIRouter(prefix="/api/cart", tags=["cart"])
 DB = Annotated[Session, Depends(get_db)]
 # The browser stores the cart_id returned by POST /api/cart/items and sends it back in this header.
 CartId = Annotated[UUID | None, Header(alias="X-Cart-Id")]
+# Each add without a cart id creates a cart row; cap it so a script cannot fill the database.
+CART_WRITES_PER_IP = RateLimiter(limit=60, window_seconds=60)
 
 
 def _id(cart_id: UUID | None) -> str | None:
@@ -25,8 +28,9 @@ def get_cart(db: DB, x_cart_id: CartId = None):
 
 
 @router.post("/items", response_model=CartOut, status_code=201)
-def add_item(db: DB, body: CartItemCreate, x_cart_id: CartId = None):
+def add_item(db: DB, body: CartItemCreate, request: Request, x_cart_id: CartId = None):
     """Add a product. Creates a new cart when no valid X-Cart-Id is sent; keep the returned cart_id."""
+    enforce(CART_WRITES_PER_IP, client_ip(request))
     cart = cart_service.add_item(db, _id(x_cart_id), body.product_id, body.quantity)
     return cart_service.summarize(cart)
 

@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.ai.ollama import OllamaClient, get_ollama
+from app.core.config import settings
 from app.core.errors import ServiceError
 from app.schemas.assistant import ChatResponse
 
@@ -25,6 +26,8 @@ class CrewRequest(BaseModel):
 def crew_chat(body: CrewRequest, ollama: Annotated[OllamaClient, Depends(get_ollama)]):
     """Optional CrewAI workflow (3 agents + deterministic validation). Much slower than /chat;
     meant for requests that combine a budget with nutrition or planning goals. Needs `crewai` installed."""
+    if not settings.crew_enabled:
+        raise CrewUnavailable("The CrewAI workflow is turned off. Set CREW_ENABLED=true in .env to use it.")
     try:
         from app.crew.workflow import run_crew  # imported lazily: CrewAI is an optional dependency
     except ImportError:

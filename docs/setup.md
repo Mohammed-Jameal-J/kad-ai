@@ -8,7 +8,7 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 python -m app.db.seed                       # optional: server also seeds on startup
-python -m uvicorn app.main:app --reload --port 8000
+python -m uvicorn app.main:app --reload --port 8000 --no-proxy-headers
 ```
 
 - API docs (Swagger): http://127.0.0.1:8000/docs

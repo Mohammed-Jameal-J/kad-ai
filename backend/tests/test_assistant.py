@@ -156,7 +156,7 @@ def test_unknown_product_explained(ask):
 def test_budget_basket_totals_are_computed_by_backend(ask):
     fake = FakeOllama({QWEN: parsed("budget_basket", category="fruits", budget_inr=500)})
     body, fake = ask("Suggest fruits for my family within ₹500.", fake)
-    assert fake.chat_models() == [QWEN]  # no llama call for a basket
+    assert fake.chat_models() == [] and body["parser"] == "rules"  # clear budget request: no model at all
     basket = body["basket"]
     assert 0 < basket["total_paise"] <= 50000
     assert basket["total_paise"] == sum(db_price(p["slug"]) for p in body["products"])
@@ -257,7 +257,7 @@ def test_nutrition_with_verified_reference(ask):
 def test_ollama_down_falls_back_to_search(ask):
     def refuse(request):
         raise httpx.ConnectError("refused")
-    body, _ = ask("Which is better, apples or oranges?", OllamaClient(transport=httpx.MockTransport(refuse)))
+    body, _ = ask("Which apples and oranges are good?", OllamaClient(transport=httpx.MockTransport(refuse)))
     assert body["parser"] == "fallback" and body["intent"] == "search"
     assert {"shimla-apple", "nagpur-orange"} <= {p["slug"] for p in body["products"]}
     assert "unavailable" in body["notes"][0]
@@ -281,7 +281,15 @@ def test_parser_helpers():
     vocab = product_vocabulary(["Alphonso Mango", "Green Kiwi", "Purple Brinjal"])
     assert "green" not in vocab and {"mango", "kiwi", "brinjal"} <= vocab
     assert quick_parse("any eggplant?", vocab).keywords == ["brinjal"]
-    assert quick_parse("Add two kg mangoes", vocab) is None  # cart change -> model decides
+    rule = lambda m: quick_parse(m, vocab).model_dump(exclude_defaults=True)  # noqa: E731
+    assert rule("Add two kg mangoes") == {"intent": "add_to_cart", "keywords": ["mango"], "quantity": 2, "quantity_unit": "kg"}
+    assert rule("put 3 dozen kiwis in my cart") == {"intent": "add_to_cart", "keywords": ["kiwi"], "quantity": 3, "quantity_unit": "dozen"}
+    assert rule("buy a dozen mangoes")["quantity_unit"] == "dozen"
+    assert rule("Suggest fruits within ₹500") == {"intent": "budget_basket", "category": "fruits", "budget_inr": 500}
+    assert rule("Which is better, mango or kiwi?") == {"intent": "compare", "keywords": ["mango", "kiwi"]}
+    assert quick_parse("add 1 kg mango and 2 kg kiwi", vocab) is None  # two amounts: model pairs them
+    assert quick_parse("add 500 g mango", vocab) is None  # over the quantity limit: model + validation
+    assert quick_parse("don't add mangoes", vocab) is None
     assert quick_parse("mangoes for ₹300", vocab) is None    # amount without "under" is ambiguous
     assert quick_parse("mangoes under rs 300", vocab).budget_inr == 300
     assert quick_parse("Compare mangoes vs kiwis", vocab).model_dump(include={"intent", "keywords"}) == \
@@ -296,3 +304,10 @@ def test_price_guard():
     assert not mentions_unknown_price("Apples ₹180, oranges Rs. 120", allowed)
     assert mentions_unknown_price("Apples ₹180.50", allowed)
     assert mentions_unknown_price("only INR 99", allowed)
+
+
+def test_model_cannot_add_products_the_customer_never_named(ask):
+    fake = FakeOllama({QWEN: parsed("search", keywords=["mango", "apple"])})
+    body, _ = ask("Which mangoes are good for my kids?", fake)
+    assert body["parser"] == QWEN
+    assert {p["slug"] for p in body["products"]} == {"alphonso-mango"}  # invented "apple" dropped

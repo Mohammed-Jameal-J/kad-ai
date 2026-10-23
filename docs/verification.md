@@ -13,6 +13,18 @@ python scripts\smoke_test.py --ai --order        # 21 checks, uses qwen and plac
 python -m app.ai.check                           # (from backend/) loads each model, compares outputs
 ```
 
+## AI quality and speed (2026-10-23)
+
+```powershell
+python scripts\bench_chat.py                                    # timings, see docs/architecture.md
+cd backend; .\.venv-eval\Scripts\python evals\run_eval.py --judge  # DeepEval, local Ollama judge
+```
+
+DeepEval, 11 live cases (llama3.2 intent + writer, llama3.2 judge): IntentMatch 11/11, PriceGrounded 11/11,
+BudgetRespected 11/11, Grounded helpfulness (LLM judge) 8/11. Judge failures: a delivery question gets the
+generic help text (no delivery FAQ yet); a prompt-injection message gets help text (safe); a "3 dozen bananas"
+reply where the judge doesn't recognise ₹180 as 3 × ₹60.
+
 ## Results
 
 | Suite | Result |

@@ -30,9 +30,22 @@ class Settings(BaseSettings):
     ollama_connect_timeout: float = 5.0
     ollama_read_timeout: float = 180.0  # first call includes loading the model from disk
     # How long Ollama keeps a model in RAM after a call ("5m", "30s", "0" = unload immediately).
-    ollama_keep_alive: str = "5m"
+    ollama_keep_alive: str = "30m"
     # Context window in tokens. Smaller = less RAM for the KV cache; 4096 is plenty for chat turns.
     ollama_num_ctx: int = 4096
+    # Load the intent model in the background at startup, so the first chat doesn't pay ~10-40 s.
+    ollama_prewarm: bool = True
+    # Abuse protection for the one local model. Chat requests waiting for the model beyond this
+    # many get 503 "busy" at once instead of piling up; a waiter gives up after queue_wait seconds.
+    ollama_max_waiting: int = 3
+    ollama_queue_wait: float = 90.0
+    # Assistant chat requests allowed per client IP per minute (rules-only replies count too).
+    chat_per_minute: int = 10
+    # The CrewAI endpoint is slow (minutes on CPU) and easy to abuse; off unless you turn it on.
+    crew_enabled: bool = False
+    # Header holding the real client IP, set by your deploy edge (e.g. "x-real-ip" on Vercel).
+    # Leave empty locally: forwarded headers from the browser are spoofable. See core/ratelimit.py.
+    trusted_ip_header: str = ""
 
 
 settings = Settings()

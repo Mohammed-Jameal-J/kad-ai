@@ -1,10 +1,13 @@
 import logging
+import threading
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from app.ai.ollama import get_ollama
+from app.ai.parser import llm_parse
 from app.api import assistant, auth, cart, catalog, crew, orders
 from app.core.config import settings
 from app.core.errors import ServiceError
@@ -20,7 +23,19 @@ logger = logging.getLogger("kadai")
 async def lifespan(_app: FastAPI):
     added = init_db()
     logger.info("Database ready, seed added %s", added)
+    if settings.ollama_prewarm:
+        threading.Thread(target=_prewarm, daemon=True).start()
     yield
+
+
+def _prewarm():
+    try:
+        # A real parse, not just a load: Ollama then also caches the long system prompt (~500 tokens,
+        # ~15 s to read on CPU), so the first customer message is as fast as later ones.
+        llm_parse(get_ollama(), "hello", [])
+        logger.info("Pre-loaded %s", settings.ollama_intent_model)
+    except ServiceError as e:  # Ollama not running: chat reports it when used
+        logger.info("Model pre-load skipped: %s", e.detail)
 
 
 app = FastAPI(
@@ -46,6 +61,21 @@ async def limit_body_size(request: Request, call_next):
     if length and length.isdigit() and int(length) > settings.max_request_bytes:
         return JSONResponse({"detail": "Request body too large"}, status_code=413)
     return await call_next(request)
+
+
+PRIVATE_PATHS = ("/api/cart", "/api/orders", "/api/auth", "/api/assistant", "/api/contact")
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault("Referrer-Policy", "no-referrer")
+    if request.url.path.startswith(PRIVATE_PATHS):
+        # carts, orders and account data are per-user: never let a shared cache keep them
+        response.headers.setdefault("Cache-Control", "no-store")
+    return response
 
 
 @app.exception_handler(ServiceError)

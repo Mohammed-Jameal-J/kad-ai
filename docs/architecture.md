@@ -90,18 +90,28 @@ message
 - Nutrition values come only from `backend/data/nutrition.json` rows marked `verified: true`
   (currently empty: the USDA site was unreachable when building; see that file's `_note`).
 
-Measured live (CPU, one model in RAM at a time):
+Measured live on 2026-10-23 (CPU, 11.8 GB RAM, one model in RAM at a time; `python scripts/bench_chat.py`):
 
-| Request | Path | Time |
-|---|---|---|
-| "Find mangoes and oranges", "fruits below ₹200", "vegetables in stock" | rules | < 0.1 s |
-| "Compare apples and oranges" | rules + llama | ~23 s |
-| "Add two kilograms of apples", "benefits of bananas" (qwen path) | qwen | ~14 s |
-| "Suggest fruits within ₹500" after a llama call | swap + qwen | ~49 s |
-| "Which is better value, carrots or beetroot?" | qwen + swap + llama | ~75 s |
+| Message | Before | Now (default) | Now (`OLLAMA_INTENT_MODEL=llama3.2`) |
+|---|---|---|---|
+| "Add two kilograms of apples to my cart" | 55.0 s qwen | 0.1 s rules | 0.2 s rules |
+| "Suggest fruits within ₹500" | 16.7 s qwen | 0.0 s rules | 0.0 s rules |
+| "Put 3 dozen bananas in my cart" | 16.8 s qwen | 0.0 s rules | 0.0 s rules |
+| "Plan a week of vegetables ... under 300 rupees" | 17.5 s qwen | 0.0 s rules | 0.0 s rules |
+| "add 1 kg onion and 2 kg tomato" | 15.0 s qwen | 12.5 s qwen | 9.8 s llama |
+| "Which is better value, carrots or beetroot?" | 52.3 s qwen + llama | 36.1 s swap + llama | 21.8 s llama |
+| "do you deliver on sunday?" | 54.7 s swap + qwen | 36.2 s swap + qwen | 2.0 s llama |
+| "I want something sweet for my kids" | 14.6 s qwen | 7.2 s qwen | 1.9 s llama |
 
-Model swaps dominate. With more free RAM, `OLLAMA_MAX_LOADED_MODELS=2` and removing the unload
-in `OllamaClient.chat` would cut the slow rows roughly in half.
+What made it faster:
+- Rules for clear cart and budget messages (`parser.cart_or_basket_rule`) and "which is better, X or Y".
+- Few-shot answers without default fields, `num_predict` 120: fewer output tokens (~0.1 s each on CPU).
+- Startup pre-warm runs a real parse, so the model and its ~500-token system prompt are cached;
+  `OLLAMA_KEEP_ALIVE=30m` keeps them.
+- Model keywords are filtered to words the customer actually wrote, so a model can't add products.
+
+The rest is model swapping (~11 s load + re-reading the prompt). With ~2 GB free RAM both models
+can't stay loaded. Using llama3.2 for intent too (one model, no swaps) keeps every reply under ~22 s.
 
 ## Storefront (frontend/)
 

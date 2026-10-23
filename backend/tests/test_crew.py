@@ -17,6 +17,12 @@ HAS_CREWAI = importlib.util.find_spec("crewai") is not None
 pytestmark = pytest.mark.usefixtures("client")  # the client fixture creates and seeds the test database
 
 
+@pytest.fixture(autouse=True)
+def crew_on(monkeypatch):
+    from app.core.config import settings
+    monkeypatch.setattr(settings, "crew_enabled", True)
+
+
 def pid(slug):
     with SessionLocal() as db:
         return db.scalar(select(Product.id).where(Product.slug == slug))
@@ -196,3 +202,11 @@ def test_crew_request_validation(client):
     assert client.post("/api/assistant/crew", json={"message": ""}).status_code == 422
     assert client.post("/api/assistant/crew", json={"message": "x", "budget_inr": 0}).status_code == 422
     assert client.post("/api/assistant/crew", json={"message": "x", "tools": ["shell"]}).status_code == 422
+
+
+def test_crew_endpoint_is_off_by_default(client, monkeypatch):
+    from app.core.config import settings
+    monkeypatch.setattr(settings, "crew_enabled", False)
+    r = client.post("/api/assistant/crew", json={"message": "healthy fruits within ₹500"})
+    assert r.status_code == 501
+    assert "CREW_ENABLED" in r.json()["detail"]

@@ -10,16 +10,22 @@ from collections import defaultdict, deque
 
 from fastapi import Request
 
-# Requests from these addresses are our own Next.js proxy, so the real client is in X-Forwarded-For.
-TRUSTED_PROXIES = {"127.0.0.1", "::1"}
-
+from app.core.config import settings
+from app.core.errors import TooManyAttempts
 
 def client_ip(request: Request) -> str:
-    peer = request.client.host if request.client else "unknown"
-    forwarded = request.headers.get("x-forwarded-for")
-    if peer in TRUSTED_PROXIES and forwarded:
-        return forwarded.split(",")[0].strip()  # left-most = original client
-    return peer
+    """The address to rate-limit on.
+
+    X-Forwarded-For is NOT trusted by default: the Next.js rewrite proxy passes on whatever the
+    browser sent, so anyone could pick a new fake IP per request. Locally every request therefore
+    counts as 127.0.0.1 (one shared budget). When deployed behind an edge that overwrites a header
+    with the real client IP (Vercel: x-real-ip, nginx: X-Real-IP $remote_addr), set
+    TRUSTED_IP_HEADER to it, and make sure the backend is reachable only through that edge.
+    Run uvicorn with --no-proxy-headers, or it rewrites request.client from the spoofable header.
+    """
+    if settings.trusted_ip_header and (value := request.headers.get(settings.trusted_ip_header)):
+        return value.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
 
 
 class RateLimiter:
@@ -56,3 +62,10 @@ class RateLimiter:
     def clear(self) -> None:
         with self._lock:
             self._hits.clear()
+
+
+def enforce(limiter: RateLimiter, key: str) -> None:
+    """Count one request for `key`; 429 with Retry-After once it is over the limit."""
+    if wait := limiter.retry_after(key):
+        raise TooManyAttempts(wait)
+    limiter.record(key)

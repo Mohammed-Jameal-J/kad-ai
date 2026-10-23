@@ -33,15 +33,20 @@ def test_sliding_window():
     assert limiter.retry_after("other") is None  # keys are independent
 
 
-def _request(peer: str, forwarded: str | None = None) -> Request:
-    headers = [(b"x-forwarded-for", forwarded.encode())] if forwarded else []
-    return Request({"type": "http", "client": (peer, 1234), "headers": headers})
+def _request(peer: str, **headers: str) -> Request:
+    raw = [(k.replace("_", "-").encode(), v.encode()) for k, v in headers.items()]
+    return Request({"type": "http", "client": (peer, 1234), "headers": raw})
 
 
-def test_forwarded_header_trusted_only_from_our_proxy():
-    assert client_ip(_request("127.0.0.1", "203.0.113.7, 10.0.0.1")) == "203.0.113.7"
-    assert client_ip(_request("198.51.100.9", "203.0.113.7")) == "198.51.100.9"  # spoofing attempt ignored
-    assert client_ip(_request("198.51.100.9")) == "198.51.100.9"
+def test_forwarded_headers_ignored_unless_configured(monkeypatch):
+    from app.core.config import settings
+    # Default: the browser-controlled header is ignored, even via our own proxy on 127.0.0.1
+    assert client_ip(_request("127.0.0.1", x_forwarded_for="203.0.113.7")) == "127.0.0.1"
+    assert client_ip(_request("198.51.100.9", x_forwarded_for="203.0.113.7")) == "198.51.100.9"
+
+    monkeypatch.setattr(settings, "trusted_ip_header", "x-real-ip")  # deployed behind an edge
+    assert client_ip(_request("10.0.0.2", x_real_ip="203.0.113.7", x_forwarded_for="1.2.3.4")) == "203.0.113.7"
+    assert client_ip(_request("10.0.0.2")) == "10.0.0.2"
 
 
 @pytest.fixture

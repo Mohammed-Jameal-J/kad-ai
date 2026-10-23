@@ -16,7 +16,7 @@ def test_chat_sends_options_and_returns_text():
     body = fake.bodies("/api/chat")[0]
     assert body["stream"] is False
     assert body["options"]["num_ctx"] == 4096
-    assert body["keep_alive"] == "5m"
+    assert body["keep_alive"] == "30m"
 
 
 def test_think_flag_only_for_thinking_models():

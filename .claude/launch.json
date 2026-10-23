@@ -5,7 +5,7 @@
       "name": "backend",
       "runtimeExecutable": "python",
       "runtimeArgs": [
-        "-m", "uvicorn", "app.main:app", "--port", "8000", "--reload",
+        "-m", "uvicorn", "app.main:app", "--port", "8000", "--reload", "--no-proxy-headers",
         "--app-dir", "C:/Users/Admin/Desktop/kad_ai/backend",
         "--reload-dir", "C:/Users/Admin/Desktop/kad_ai/backend/app"
       ],

@@ -22,7 +22,7 @@ All prices are **demonstration prices**, not live market prices.
 ```powershell
 cd backend
 pip install -r requirements.txt
-python -m uvicorn app.main:app --reload --port 8000
+python -m uvicorn app.main:app --reload --port 8000 --no-proxy-headers
 ```
 
 ```powershell

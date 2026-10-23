@@ -13,7 +13,8 @@ instructions.
 cd C:\Users\Admin\Desktop\kad_ai\backend
 python -m venv .venv-crewai
 .\.venv-crewai\Scripts\python -m pip install -r requirements-crewai.txt
-.\.venv-crewai\Scripts\python -m uvicorn app.main:app --port 8001
+$env:CREW_ENABLED = "true"   # the endpoint is off by default (slow, easy to abuse)
+.\.venv-crewai\Scripts\python -m uvicorn app.main:app --port 8001 --no-proxy-headers
 ```
 
 ```powershell
