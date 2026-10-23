@@ -258,9 +258,6 @@ function Extras({ msg, onAdd, onConfirm, onCancel }: ExtrasProps) {
         </ol>
       ) : null}
       {notes.length > 0 && <ul className={s.notes}>{notes.map((n) => <li key={n}>{n}</li>)}</ul>}
-      <span className={s.meta}>
-        {data.parser}{data.writer !== "template" ? ` → ${data.writer}` : ""} · {(data.duration_ms / 1000).toFixed(1)}s
-      </span>
     </>
   );
 }

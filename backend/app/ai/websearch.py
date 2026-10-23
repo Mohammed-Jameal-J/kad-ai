@@ -21,7 +21,8 @@ FOOD_TOPICS = {
     "recipe", "recipes", "cook", "cooking", "dish", "curry", "salad", "juice", "smoothie", "chutney",
     "pickle", "dessert", "breakfast", "snack", "ripe", "ripen", "ripening", "season", "seasonal",
     "storage", "store", "keep", "fresh", "freshness", "wash", "peel", "cut", "grow", "harvest",
-    "energy", "fruit", "fruits", "vegetable", "vegetables", "veggies", "sweet", "sour",
+    "energy", "advantage", "advantages", "benefit", "benefits", "healthy", "health", "eat", "eating",
+    "fruit", "fruits", "vegetable", "vegetables", "veggies", "sweet", "sour",
 }
 
 

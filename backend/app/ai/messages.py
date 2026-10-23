@@ -128,6 +128,20 @@ MESSAGES: dict[str, dict[str, str]] = {
         "ar": "من مصادر على الإنترنت ولم يتحقق منها Kad AI. الأسعار والمخزون من متجرنا فقط.",
         "hi": "वेब स्रोतों से, Kad AI द्वारा जाँचा नहीं गया। कीमतें और स्टॉक केवल हमारे स्टोर से आते हैं।",
     },
+    "about": {
+        "en": "Kad AI is a demo online fruit and vegetable store with an AI shopping assistant. Browse and "
+              "search products, build a basket for your budget, compare items, and check out a demo order. "
+              "Prices and stock always come from our database.",
+        "es": "Kad AI es una tienda online de demostración de frutas y verduras con un asistente de compras con IA. "
+              "Busca productos, arma una cesta según tu presupuesto, compara artículos y haz un pedido de prueba. "
+              "Los precios y el stock siempre vienen de nuestra base de datos.",
+        "ar": "Kad AI متجر تجريبي للفواكه والخضروات عبر الإنترنت مع مساعد تسوق بالذكاء الاصطناعي. "
+              "ابحث عن المنتجات، وكوّن سلة تناسب ميزانيتك، وقارن بين المنتجات، وجرّب طلبًا تجريبيًا. "
+              "الأسعار والمخزون تأتي دائمًا من قاعدة بياناتنا.",
+        "hi": "Kad AI फल और सब्ज़ियों का एक डेमो ऑनलाइन स्टोर है, जिसमें AI शॉपिंग असिस्टेंट है। "
+              "प्रोडक्ट खोजें, अपने बजट में टोकरी बनाएँ, चीज़ों की तुलना करें और डेमो ऑर्डर करें। "
+              "कीमतें और स्टॉक हमेशा हमारे डेटाबेस से आते हैं।",
+    },
     "help": {
         "en": "I can help you shop for fruits and vegetables. Try:",
         "es": "Puedo ayudarte a comprar frutas y verduras. Prueba:",

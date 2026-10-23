@@ -54,3 +54,14 @@ def test_no_key_means_nothing_is_sent(monkeypatch):
     monkeypatch.setattr(settings, "resend_api_key", "")
     monkeypatch.setattr(httpx, "post", lambda *a, **k: (_ for _ in ()).throw(AssertionError("must not call Resend")))
     assert email.send_welcome("a@example.com", "Asha") is False
+
+
+def test_newsletter_email_has_links_and_replies_reach_the_owner(monkeypatch):
+    calls = []
+    monkeypatch.setattr(settings, "resend_api_key", "re_test")
+    monkeypatch.setattr(httpx, "post", lambda url, headers, json, timeout: calls.append(json) or httpx.Response(200, request=httpx.Request("POST", url)))
+    assert email.send_newsletter_confirmation("fan@example.com") is True
+    sent = calls[0]
+    assert sent["subject"] == "Thanks for testing Kad AI" and sent["reply_to"] == email.OWNER_EMAIL
+    for link in (email.GITHUB, email.LINKEDIN, f"{settings.site_url}/register", f"mailto:{email.OWNER_EMAIL}"):
+        assert link in sent["html"]

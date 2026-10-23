@@ -327,11 +327,6 @@
   color: var(--km-muted);
 }
 
-.meta {
-  font-size: 0.68rem;
-  color: #9aa6af;
-}
-
 .inputRow {
   display: flex;
   gap: 0.5rem;

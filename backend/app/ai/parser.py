@@ -4,6 +4,7 @@
    No LLM, answers instantly. Returns None whenever the message is not clearly a plain search.
 2. llm_parse(): the intent model (qwen3:4b) with a JSON schema, validated by Pydantic.
 """
+import difflib
 import json
 import re
 
@@ -26,7 +27,7 @@ NON_SEARCH_WORDS = {
     "list", "week", "which", "best", "better", "how", "why", "storage", "store", "keep", "remove",
 }
 COMPARE_WORDS = {"compare", "versus", "vs", "difference"}
-NUTRITION_WORDS = {"benefit", "nutrition", "nutrient", "healthy", "health", "calorie", "vitamin",
+NUTRITION_WORDS = {"benefit", "advantage", "nutrition", "nutrient", "healthy", "health", "calorie", "vitamin",
                    "protein", "fiber", "fibre", "limitation", "allergy", "storage", "store"}
 CART_WORDS = {"add", "cart", "buy", "order", "remove"}
 NUMBER_WORDS = {"a": 1, "an": 1, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
@@ -37,6 +38,8 @@ UNITS = {"kg": "kg", "kgs": "kg", "kilo": "kg", "kilos": "kg", "kilogram": "kg",
          "pack": "pack", "packs": "pack", "packet": "pack", "packets": "pack"}
 QUANTITY = re.compile(rf"\b(\d{{1,3}}|{'|'.join(NUMBER_WORDS)})\s*({'|'.join(sorted(UNITS, key=len, reverse=True))})?\b")
 BASKET_WORDS = {"suggest", "recommend", "plan", "basket", "budget", "within", "week", "family"}
+# Words the rules react to. A customer's typo of one of these ("healty", "mongo") is corrected first.
+RULE_WORDS = NON_SEARCH_WORDS | NUTRITION_WORDS | COMPARE_WORDS | CART_WORDS | BASKET_WORDS | set(CATEGORY_WORDS)
 AMOUNT = r"(?:₹|rs\.?|inr)\s*(\d{1,6})|(\d{1,6})\s*(?:₹|rs\b|rupee)"
 PRICE_CAP = re.compile(rf"\b(?:below|under|less than|upto|up to|cheaper than|max)\s*(?:{AMOUNT})")
 
@@ -53,6 +56,26 @@ ADULT = re.compile(
     r"18\+|adult (content|video|videos|movie|movies|site|sites|chat))(?=\W|$)",
     re.IGNORECASE,
 )
+
+
+def spell(word: str, known: set[str]) -> str:
+    """Closest known word for a likely typo, else the word itself. Same first letter and length within
+    one, so "mongo"→"mango" and "healty"→"healthy", but "with" never becomes "within"."""
+    if word in known or len(word) < 4:
+        return word
+    candidates = [k for k in known if k[0] == word[0] and abs(len(k) - len(word)) <= 1]
+    return next(iter(difflib.get_close_matches(word, candidates, n=1, cutoff=0.8)), word)
+
+
+ABOUT = re.compile(
+    r"\b(kad ?ai|kadai)\b.*\b(website|site|store|shop|app|do|does)\b|\b(what|which) (is )?this (website|site|store|shop|app)\b"
+    r"|\bwho are you\b|\bwhat can you do\b|\babout (this|the) (website|site|store|shop)\b",
+    re.IGNORECASE,
+)
+
+
+def is_about_question(message: str) -> bool:
+    return bool(ABOUT.search(message))
 
 
 def is_greeting(message: str) -> bool:
@@ -87,7 +110,8 @@ def quick_parse(message: str, vocabulary: set[str], strict: bool = True) -> Pars
     """strict=False is the fallback when the intent model is unavailable: any product or
     category mention becomes a search, even if the customer asked something else."""
     text = message.lower()
-    tokens = [normalize(t) for t in re.findall(r"[a-z]+", text)]
+    known = vocabulary | RULE_WORDS
+    tokens = [spell(normalize(t), known) for t in re.findall(r"[a-z]+", text)]
     keywords = list(dict.fromkeys(t for t in tokens if t in vocabulary))
 
     # Unambiguous compare / nutrition questions skip the intent model (saves a model swap).
@@ -193,5 +217,6 @@ def llm_parse(ollama: OllamaClient, message: str, history: list[ChatTurn]) -> Pa
     parsed = ollama.chat_json(ollama.intent_model, messages, ParsedRequest, temperature=0, max_tokens=120)
     # Small models sometimes "helpfully" add products nobody named; keep only words the customer used.
     said = {normalize(w) for w in re.findall(r"[a-z]+", message.lower())}
-    parsed.keywords = [k for k in parsed.keywords if all(normalize(w) in said for w in k.split())]
+    # (a corrected typo counts: the model may answer "mango" for "mongo")
+    parsed.keywords = [k for k in parsed.keywords if all(spell(normalize(w), said) in said for w in k.split())]
     return parsed

@@ -171,7 +171,12 @@ def test_taste_comparison_uses_web_and_keeps_store_products(client, web):
 
 
 def test_plain_comparison_stays_on_store_data(client, web):
-    body = client.post("/api/assistant/chat", json={"message": "Compare apples and oranges"}).json()
+    from fakes import FakeOllama, make_client
+    app.dependency_overrides[get_ollama] = lambda: make_client(FakeOllama("Shimla Apple costs ₹180 per kg."))  # never a real model
+    try:
+        body = client.post("/api/assistant/chat", json={"message": "Compare apples and oranges"}).json()
+    finally:
+        app.dependency_overrides.clear()
     assert web == [] and body["sources"] == [] and body["parser"] == "rules"
     assert "Shimla Apple" in body["reply"]
 

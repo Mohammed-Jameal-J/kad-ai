@@ -16,7 +16,9 @@ from sqlalchemy.orm import Session
 
 from app.ai.messages import HELP_EXAMPLES, t
 from app.ai.ollama import OllamaClient, OllamaError
-from app.ai.parser import is_adult_request, is_greeting, llm_parse, normalize, product_vocabulary, quick_parse
+from app.ai.parser import (
+    is_about_question, is_adult_request, is_greeting, llm_parse, normalize, product_vocabulary, quick_parse, spell,
+)
 from app.ai import websearch
 from app.ai.writer import write, write_from_web
 from app.core.config import settings
@@ -341,8 +343,9 @@ def is_taste_question(message: str) -> bool:
 
 
 def is_food_question(message: str, vocabulary: set[str]) -> bool:
-    words = {normalize(w) for w in re.findall(r"[a-z]+", message.lower())}
-    return bool(words & (vocabulary | websearch.FOOD_TOPICS))
+    known = vocabulary | websearch.FOOD_TOPICS
+    words = {spell(normalize(w), known) for w in re.findall(r"[a-z]+", message.lower())}  # "mongo" → "mango"
+    return bool(words & known)
 
 
 def chat(db: Session, ollama: OllamaClient, request: ChatRequest, client: str = "unknown") -> dict:
@@ -353,6 +356,13 @@ def chat(db: Session, ollama: OllamaClient, request: ChatRequest, client: str = 
     if is_adult_request(request.message) or is_greeting(request.message):
         return {
             "reply": t(lang, "blocked") if is_adult_request(request.message) else t(lang, "greeting"),
+            "intent": "other", "parser": "rules", "writer": "template", "notes": [],
+            "duration_ms": int((time.perf_counter() - started) * 1000),
+        }
+
+    if is_about_question(request.message):  # "what is Kad AI?" — instant, no model
+        return {
+            "reply": t(lang, "about") + "\n\n" + t(lang, "help") + "\n" + HELP_EXAMPLES,
             "intent": "other", "parser": "rules", "writer": "template", "notes": [],
             "duration_ms": int((time.perf_counter() - started) * 1000),
         }

@@ -311,3 +311,18 @@ def test_model_cannot_add_products_the_customer_never_named(ask):
     body, _ = ask("Which mangoes are good for my kids?", fake)
     assert body["parser"] == QWEN
     assert {p["slug"] for p in body["products"]} == {"alphonso-mango"}  # invented "apple" dropped
+
+
+def test_typos_are_understood():
+    from app.ai.parser import spell
+    vocab = product_vocabulary(["Alphonso Mango", "Shimla Apple"])
+    assert quick_parse("give me short answer about mongo advantage", vocab).model_dump(include={"intent", "keywords"}) ==         {"intent": "nutrition", "keywords": ["mango"]}
+    assert quick_parse("is apple healty for our life", vocab).intent == "nutrition"
+    assert spell("with", {"within"}) == "with"  # different length: never "corrected"
+    assert spell("mongo", {"mango", "orange"}) == "mango"
+
+
+def test_about_question_is_instant(ask):
+    body, fake = ask("what is kad ai website does", FakeOllama())
+    assert body["parser"] == "rules" and fake.chat_models() == []
+    assert "demo online fruit and vegetable store" in body["reply"]
