@@ -1,6 +1,6 @@
 # Pinned to the versions tested locally, so a cloud deploy installs the same thing.
 fastapi==0.139.0
-uvicorn[standard]==0.51.0
+uvicorn[standard]==0.54.0
 SQLAlchemy==2.0.51
 alembic==1.20.1
 pydantic==2.13.4
